@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://qxgjz.github.io/ai-tools-radar/sitemap.xml
