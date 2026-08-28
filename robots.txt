@@ -1,4 +1,29 @@
+# AI Tools Radar - robots.txt
+# https://qxgjz.github.io/ai-tools-radar/
+
 User-agent: *
 Allow: /
 
+# 禁止爬取临时文件和目录
+Disallow: /*.tmp$
+Disallow: /*.bak$
+Disallow: /*.old$
+
+# 允许所有主要搜索引擎
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# Sitemap位置
 Sitemap: https://qxgjz.github.io/ai-tools-radar/sitemap.xml
