@@ -68,3 +68,29 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .dark .text-secondary{color:rgba(255,255,255,.65)}
 /* ===== 打印样式 ===== */
 @media print{.navbar,.footer,.back-to-top,.hero-search,.filter-bar,.pagination,.newsletter{display:none!important}.tool-card{break-inside:avoid;border:1px solid #ccc}.detail-container{max-width:100%}}
+/* ===== 工具卡片信息栏 ===== */
+.tool-card-info{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+.tool-rating{font-size:.8rem;font-weight:600;color:#f59e0b}
+.tool-price-tag{font-size:.7rem;padding:2px 8px;border-radius:10px;font-weight:500}
+.tool-price-tag.free{background:#dcfce7;color:#16a34a}
+.tool-price-tag.paid{background:#fee2e2;color:#dc2626}
+.tool-price-tag.freemium{background:#dbeafe;color:#2563eb}
+.tool-hot-badge{font-size:.7rem;padding:2px 8px;border-radius:10px;background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;font-weight:600;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+.dark .tool-price-tag.free{background:#166534;color:#4ade80}
+.dark .tool-price-tag.paid{background:#991b1b;color:#fca5a5}
+.dark .tool-price-tag.freemium{background:#1e40af;color:#93c5fd}
+/* ===== 新手指引 ===== */
+.quick-start{background:linear-gradient(135deg,#667eea,#764ba2);border-radius:16px;padding:30px;margin:20px 0;color:#fff}
+.quick-start h2{font-size:1.5rem;margin-bottom:20px;text-align:center}
+.quick-start-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.quick-start-step{text-align:center;padding:20px;background:rgba(255,255,255,.1);border-radius:12px;backdrop-filter:blur(10px);transition:transform .2s}
+.quick-start-step:hover{transform:translateY(-3px)}
+.quick-step-number{width:40px;height:40px;border-radius:50%;background:#fff;color:#667eea;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:bold;margin:0 auto 12px}
+.quick-step-title{font-size:1.1rem;font-weight:600;margin-bottom:8px}
+.quick-step-desc{font-size:.85rem;opacity:.9}
+@media(max-width:768px){.quick-start-steps{grid-template-columns:1fr}.quick-start{padding:20px}}
+/* ===== 导航栏对比按钮 ===== */
+.nav-compare-btn{background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:4px}
+.nav-compare-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(240,147,251,.4)}
+@media(max-width:768px){.nav-compare-btn{display:none}}
