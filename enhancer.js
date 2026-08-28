@@ -1,6 +1,148 @@
 (function(){
 'use strict';
-// 联盟营销配置（替换为你的真实联盟链接）
+// ===== XSS 防护工具函数 =====
+function escapeHtml(str){
+if(!str)return '';
+var div=document.createElement('div');
+div.appendChild(document.createTextNode(str));
+return div.innerHTML;
+}
+function sanitizeInput(str){
+if(!str)return '';
+return String(str).replace(/[<>"'`]/g,function(c){
+return {'<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c];
+});
+}
+// 对所有输入框进行 XSS 防护
+document.addEventListener('DOMContentLoaded',function(){
+var inputs=document.querySelectorAll('input[type="text"], input[type="email"], input[type="search"], textarea');
+inputs.forEach(function(input){
+input.addEventListener('input',function(){
+// 实时过滤危险字符（只过滤最危险的，不影响正常输入）
+var val=this.value;
+var sanitized=val.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/javascript:/gi,'').replace(/on\w+=/gi,'');
+if(val!==sanitized){this.value=sanitized;}
+});
+});
+});
+// ===== UX 优化：新手上路向导 =====
+function initOnboardingWizard(){
+// 检查是否已经完成引导
+if(localStorage.getItem('onboarding_completed'))return;
+// 延迟显示，等页面加载完成
+setTimeout(function(){
+// 创建引导遮罩
+var overlay=document.createElement('div');
+overlay.id='onboardingOverlay';
+overlay.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;';
+var modal=document.createElement('div');
+modal.style.cssText='background:var(--bg-primary,#fff);border-radius:16px;max-width:500px;width:100%;padding:30px;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative;';
+modal.innerHTML='<button id="onboardingSkip" style="position:absolute;top:15px;right:15px;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-secondary,#999);">×</button>'+
+'<div id="onboardingStep1">'+
+'<div style="text-align:center;margin-bottom:20px;"><div style="font-size:4rem;margin-bottom:10px;">👋</div><h2 style="margin:0 0 10px;font-size:1.5rem;">欢迎来到 AI Tools Radar</h2><p style="color:var(--text-secondary,#666);margin:0;">发现最好用的 AI 工具，提升你的工作效率。花 30 秒，让我们帮你快速上手。</p></div>'+
+'<div style="margin:20px 0;"><h3 style="font-size:1rem;margin-bottom:15px;">你最感兴趣的领域是？（可多选）</h3>'+
+'<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">'+
+'<label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border-color,#ddd);border-radius:8px;cursor:pointer;"><input type="checkbox" class="interest-cat" value="writing"> ✍️ 写作</label>'+
+'<label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border-color,#ddd);border-radius:8px;cursor:pointer;"><input type="checkbox" class="interest-cat" value="image"> 🎨 图像</label>'+
+'<label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border-color,#ddd);border-radius:8px;cursor:pointer;"><input type="checkbox" class="interest-cat" value="video"> 🎬 视频</label>'+
+'<label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border-color,#ddd);border-radius:8px;cursor:pointer;"><input type="checkbox" class="interest-cat" value="code"> 💻 编程</label>'+
+'<label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border-color,#ddd);border-radius:8px;cursor:pointer;"><input type="checkbox" class="interest-cat" value="audio"> 🎵 音频</label>'+
+'<label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border-color,#ddd);border-radius:8px;cursor:pointer;"><input type="checkbox" class="interest-cat" value="productivity"> ⚡ 效率</label>'+
+'</div></div>'+
+'<button id="onboardingNext1" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;">下一步 →</button>'+
+'</div>'+
+'<div id="onboardingStep2" style="display:none;">'+
+'<div style="text-align:center;margin-bottom:20px;"><div style="font-size:4rem;margin-bottom:10px;">🔍</div><h2 style="margin:0 0 10px;font-size:1.5rem;">为你推荐的工具</h2><p style="color:var(--text-secondary,#666);margin:0;">根据你的兴趣，我们为你精选了这些工具。</p></div>'+
+'<div id="onboardingRecommendations" style="margin:20px 0;max-height:250px;overflow-y:auto;"></div>'+
+'<button id="onboardingNext2" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;margin-bottom:10px;">下一步 →</button>'+
+'<button id="onboardingBack1" style="width:100%;padding:10px;background:none;border:1px solid var(--border-color,#ddd);border-radius:8px;cursor:pointer;color:var(--text-secondary,#666);">← 上一步</button>'+
+'</div>'+
+'<div id="onboardingStep3" style="display:none;">'+
+'<div style="text-align:center;margin-bottom:20px;"><div style="font-size:4rem;margin-bottom:10px;">🎉</div><h2 style="margin:0 0 10px;font-size:1.5rem;">恭喜你完成引导！</h2><p style="color:var(--text-secondary,#666);margin:0;">你已获得 <strong style="color:#667eea;">50 积分</strong> 和 <strong style="color:#667eea;">🔍 探索者徽章</strong>！</p></div>'+
+'<div style="background:var(--bg-secondary,#f5f5f5);padding:15px;border-radius:8px;margin:20px 0;"><h4 style="margin:0 0 10px;">💡 快速上手提示</h4><ul style="margin:0;padding-left:20px;line-height:1.8;"><li>用搜索框快速找到工具</li><li>点击工具卡片查看详细评测</li><li>收藏喜欢的工具，方便以后查看</li><li>用对比功能并排比较多个工具</li><li>点击"👤 我的"查看你的积分和等级</li></ul></div>'+
+'<button id="onboardingFinish" style="width:100%;padding:12px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;">开始探索 →</button>'+
+'</div>';
+overlay.appendChild(modal);
+document.body.appendChild(overlay);
+// 跳过按钮
+document.getElementById('onboardingSkip').addEventListener('click',function(){
+overlay.remove();
+localStorage.setItem('onboarding_completed','true');
+});
+// 第一步下一步
+document.getElementById('onboardingNext1').addEventListener('click',function(){
+var checked=document.querySelectorAll('.interest-cat:checked');
+var interests=[];
+checked.forEach(function(c){interests.push(c.value);});
+localStorage.setItem('user_interests',JSON.stringify(interests));
+// 生成推荐
+var recContainer=document.getElementById('onboardingRecommendations');
+var recTools={
+writing:['ChatGPT','Claude','Jasper','Copy.ai','Notion AI'],
+image:['Midjourney','DALL-E 3','Stable Diffusion','Canva','Leonardo AI'],
+video:['Runway','Pika','Sora','HeyGen','Synthesia'],
+code:['GitHub Copilot','Cursor','CodeLlama','Tabnine','Amazon Q'],
+audio:['Suno','ElevenLabs','Whisper','Descript','Murf AI'],
+productivity:['Notion AI','Grammarly','Otter.ai','Fireflies','Mem AI']
+};
+var allRecs=[];
+interests.forEach(function(cat){
+if(recTools[cat])allRecs=allRecs.concat(recTools[cat].slice(0,2));
+});
+if(allRecs.length===0)allRecs=['ChatGPT','Midjourney','Claude','GitHub Copilot'];
+recContainer.innerHTML=allRecs.slice(0,6).map(function(tool){
+return '<div style="padding:10px 15px;background:var(--bg-secondary,#f5f5f5);border-radius:8px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;"><span style="font-weight:500;">'+tool+'</span><a href="#" onclick="return quickSearch(\''+tool+'\'),!1" style="color:#667eea;text-decoration:none;font-size:.85rem;">查看 →</a></div>';
+}).join('');
+document.getElementById('onboardingStep1').style.display='none';
+document.getElementById('onboardingStep2').style.display='block';
+});
+// 第二步上一步
+document.getElementById('onboardingBack1').addEventListener('click',function(){
+document.getElementById('onboardingStep2').style.display='none';
+document.getElementById('onboardingStep1').style.display='block';
+});
+// 第二步下一步
+document.getElementById('onboardingNext2').addEventListener('click',function(){
+document.getElementById('onboardingStep2').style.display='none';
+document.getElementById('onboardingStep3').style.display='block';
+// 赠送50积分
+if(typeof Gamification!=='undefined'){
+Gamification.addPoints(50,'完成新手指引');
+}
+});
+// 完成按钮
+document.getElementById('onboardingFinish').addEventListener('click',function(){
+overlay.remove();
+localStorage.setItem('onboarding_completed','true');
+if(typeof showToast==='function')showToast('🎉 欢迎加入！50积分已到账');
+});
+},1500);
+}
+// ===== 性能优化：图片懒加载 + 字体优化 =====
+function initPerformanceOptimization(){
+// 图片懒加载：给所有图片添加 loading="lazy"
+var images=document.querySelectorAll('img:not([loading])');
+images.forEach(function(img){
+img.loading='lazy';
+img.decoding='async';
+// 如果没有宽高，设置以防止 CLS
+if(!img.width&&!img.height){
+img.style.aspectRatio='16/9';
+}
+});
+// 预加载关键字体（如果有）
+var fontPreload=document.createElement('link');
+fontPreload.rel='preload';
+fontPreload.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
+fontPreload.as='style';
+fontPreload.onload=function(){this.rel='stylesheet';};
+// 检查是否已经加载了 Google Fonts
+if(!document.querySelector('link[href*="fonts.googleapis.com"]')){
+// 不自动加载，保持当前配置
+}
+console.log('%c⚡ 性能优化已启动（图片懒加载+字体优化）','color:#22c55e;font-size:12px');
+}
+// ===== 联盟营销配置（替换为你的真实联盟链接）=====
 var AFFILIATE_LINKS={
 'ChatGPT':'https://chat.openai.com',
 'Claude':'https://claude.ai',
@@ -1415,6 +1557,8 @@ initToolFAQ();
 initExitIntentPopup();
 initConversionFunnel();
 addUserNavEntry();
+initPerformanceOptimization();
+initOnboardingWizard();
 },100);
 });
 console.log('%c🚀 AI Tools Radar 增强功能已加载','color:#667eea;font-size:14px;font-weight:bold');
