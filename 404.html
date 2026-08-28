@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - 页面未找到 | AI工具雷达</title>
+  <meta name="description" content="页面未找到，返回AI工具雷达首页，探索30款AI工具实测数据和深度评测。">
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      background: #fff;
+      border-radius: 24px;
+      padding: 50px 40px;
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+      animation: fadeInUp .5s ease-out;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .error-code {
+      font-size: 6rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .error-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      color: #1a1a1a;
+    }
+    p {
+      color: #666;
+      font-size: .95rem;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      font-size: .95rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-box input:focus {
+      border-color: #667eea;
+    }
+    .search-box button {
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .2s;
+    }
+    .search-box button:hover {
+      transform: translateY(-1px);
+    }
+    .quick-links {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .quick-links a {
+      display: block;
+      padding: 14px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      text-decoration: none;
+      color: #333;
+      font-size: .9rem;
+      font-weight: 500;
+      transition: all .2s;
+    }
+    .quick-links a:hover {
+      background: #eef0ff;
+      color: #667eea;
+      transform: translateY(-1px);
+    }
+    .home-btn {
+      display: inline-block;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+      transition: all .3s;
+    }
+    .home-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102,126,234,0.5);
+    }
+    .countdown {
+      margin-top: 20px;
+      font-size: .8rem;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="error-icon">🔍</div>
+    <div class="error-code">404</div>
+    <h1>页面走丢了</h1>
+    <p>你访问的页面不存在或已被移动。<br>别担心，试试搜索或返回首页。</p>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="搜索AI工具或文章..." onkeypress="if(event.key==='Enter')doSearch()">
+      <button onclick="doSearch()">搜索</button>
+    </div>
+
+    <div class="quick-links">
+      <a href="./">🏠 返回首页</a>
+      <a href="./#blog">📖 深度评测</a>
+      <a href="./#compare">⚖️ 工具对比</a>
+      <a href="./#about">ℹ️ 关于我们</a>
+    </div>
+
+    <a href="./" class="home-btn">🚀 回到首页</a>
+
+    <div class="countdown" id="countdown"></div>
+  </div>
+
+  <script>
+    function doSearch(){
+      var query = document.getElementById('searchInput').value.trim();
+      if(query){
+        window.location.href = './?q=' + encodeURIComponent(query) + '#search';
+      }
+    }
+
+    // 5秒后自动跳转首页
+    var seconds = 10;
+    var countdownEl = document.getElementById('countdown');
+    var timer = setInterval(function(){
+      seconds--;
+      if(seconds > 0){
+        countdownEl.textContent = seconds + ' 秒后自动返回首页...';
+      } else {
+        clearInterval(timer);
+        window.location.href = './';
+      }
+    }, 1000);
+
+    // 用户交互时取消自动跳转
+    document.addEventListener('click', function(){
+      clearInterval(timer);
+      countdownEl.textContent = '';
+    }, { once: true });
+  </script>
+</body>
+</html>
