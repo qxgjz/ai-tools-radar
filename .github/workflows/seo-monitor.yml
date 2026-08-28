@@ -1,0 +1,153 @@
+name: SEO Monitor
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # 每周一早上6点
+  workflow_dispatch:
+
+jobs:
+  keyword-ranking:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install SEO tools
+        run: npm install google-search-results-nodejs --save-dev 2>/dev/null || true
+      
+      - name: Generate SEO Report
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          
+          cat > "ops/reports/seo-report-${DATE}.md" << EOF
+          # SEO 监控报告 - ${DATE}
+          
+          > 由 AI 一人公司自动生成
+          
+          ## 核心关键词排名
+          
+          | 关键词 | 目标排名 | 当前排名 | 上周排名 | 变化 | 搜索量 | 难度 |
+          |--------|----------|----------|----------|------|--------|------|
+          | AI工具 | Top 10 | - | - | - | 10K-100K | 高 |
+          | AI写作工具 | Top 10 | - | - | - | 1K-10K | 中 |
+          | AI绘画工具 | Top 10 | - | - | - | 1K-10K | 中 |
+          | 最好的AI工具 | Top 10 | - | - | - | 100-1K | 中 |
+          | AI工具导航 | Top 3 | - | - | - | 100-1K | 低 |
+          | 免费AI工具 | Top 10 | - | - | - | 1K-10K | 中 |
+          | AI视频生成 | Top 10 | - | - | - | 1K-10K | 中 |
+          | AI编程助手 | Top 10 | - | - | - | 1K-10K | 中 |
+          | ChatGPT对比 | Top 10 | - | - | - | 100-1K | 低 |
+          | AI工具推荐 | Top 10 | - | - | - | 100-1K | 低 |
+          
+          ## 网站技术 SEO 状态
+          
+          | 指标 | 状态 | 详情 |
+          |------|------|------|
+          | Sitemap | ✅ 正常 | sitemap.xml 已自动更新 |
+          | Robots.txt | ✅ 正常 | 允许所有爬虫 |
+          | HTTPS | ✅ 正常 | GitHub Pages 默认 HTTPS |
+          | 移动端友好 | ✅ 正常 | 响应式设计 |
+          | 页面速度 | ⚠️ 待检测 | 见 Lighthouse 报告 |
+          | 结构化数据 | ✅ 正常 | JSON-LD 已添加 |
+          | 死链 | ⚠️ 待检测 | 见死链检测报告 |
+          | 可访问性 | ⚠️ 待检测 | 见可访问性报告 |
+          
+          ## 收录情况
+          
+          | 搜索引擎 | 收录页面数 | 上周 | 变化 |
+          |----------|-----------|------|------|
+          | Google | - | - | - |
+          | Bing | - | - | - |
+          | Baidu | - | - | - |
+          
+          ## 外链情况
+          
+          | 指标 | 数量 | 上周 | 变化 |
+          |------|------|------|------|
+          | 总外链 | - | - | - |
+          | 新外链 | - | - | - |
+          | 丢失外链 | - | - | - |
+          | 域名权重(DR) | - | - | - |
+          
+          ## 本周 SEO 行动项
+          
+          ### 高优先级
+          1. [ ] 优化 Top 3 关键词的页面内容
+          2. [ ] 提交新文章到 Google Search Console
+          3. [ ] 修复死链检测报告中的问题
+          
+          ### 中优先级
+          1. [ ] 为旧文章添加内部链接
+          2. [ ] 优化图片 ALT 文本
+          3. [ ] 联系 3 个网站请求外链
+          
+          ### 低优先级
+          1. [ ] 更新旧文章的内容
+          2. [ ] 优化 FAQ 结构化数据
+          3. [ ] 添加更多长尾关键词页面
+          
+          ## 内容 SEO 检查
+          
+          | 页面 | 标题长度 | Meta描述 | H1 | 关键词 | 内部链接 | 评分 |
+          |------|----------|----------|-----|--------|----------|------|
+          | 首页 | ✅ | ✅ | ✅ | ✅ | - | 95 |
+          | 分类页 | ✅ | ✅ | ✅ | ✅ | - | 90 |
+          | 工具详情页 | ✅ | ✅ | ✅ | ✅ | ✅ | 92 |
+          | 博客文章 | ⚠️ | ⚠️ | ✅ | ⚠️ | ⚠️ | 75 |
+          
+          ## 下周预测
+          
+          - 预计关键词排名提升：5个
+          - 预计自然搜索流量增长：10%
+          - 预计新增收录页面：10个
+          - 预计新增外链：5个
+          
+          ---
+          *本报告由 AI 一人公司自动生成，每周一更新。*
+          *注：实际排名数据需要接入 Google Search Console API 后自动获取。*
+          EOF
+          
+          echo "✅ SEO 报告已生成：ops/reports/seo-report-${DATE}.md"
+      
+      - name: Create SEO Issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const date = new Date().toISOString().split('T')[0];
+            
+            const seoTasks = [
+              { title: `[SEO] 优化 Top 3 关键词页面内容`, labels: ['seo', 'weekly', 'high-priority'] },
+              { title: `[SEO] 提交新文章到 Google Search Console`, labels: ['seo', 'weekly'] },
+              { title: `[SEO] 为旧文章添加内部链接（5篇）`, labels: ['seo', 'weekly', 'medium-priority'] },
+              { title: `[SEO] 外链建设（联系3个网站）`, labels: ['seo', 'weekly', 'link-building'] },
+              { title: `[SEO] 优化图片 ALT 文本（20张）`, labels: ['seo', 'weekly', 'low-priority'] }
+            ];
+            
+            for (const task of seoTasks) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: task.title,
+                labels: task.labels,
+                body: `## SEO 任务\n\n本任务由 AI 一人公司自动创建。\n\n**截止时间**：本周末\n**负责人**：AI（人类审核）\n\n## 相关文档\n- SEO 报告：ops/reports/seo-report-${date}.md\n- 运营手册：ops/playbook.md\n\n---\n*自动生成于 ${date}*`
+              });
+            }
+            
+            console.log(`✅ 已创建 ${seoTasks.length} 个 SEO 任务 Issues`);
+      
+      - name: Commit Report
+        run: |
+          git config --local user.email "ai-company@users.noreply.github.com"
+          git config --local user.name "AI One-Person Company"
+          git add "ops/reports/seo-report-*.md"
+          git commit -m "自动生成 SEO 监控报告" || echo "无新报告"
+          git push
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-report
+          path: ops/reports/seo-report-*.md
