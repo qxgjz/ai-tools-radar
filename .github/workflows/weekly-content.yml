@@ -1,0 +1,122 @@
+name: Weekly Content Production
+on:
+  schedule:
+    - cron: '0 8 * * 1'  # 每周一早上8点
+  workflow_dispatch:
+
+jobs:
+  content-plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Generate Weekly Content Plan
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          WEEK_NUM=$(date +%V)
+          
+          cat > "ops/reports/weekly-content-plan-${DATE}.md" << EOF
+          # 每周内容计划 - 第 ${WEEK_NUM} 周
+          
+          > 生成时间：${DATE}
+          > 由 AI 一人公司自动生成
+          
+          ## 本周内容目标
+          - 发布文章：4篇（2篇评测 + 1篇周报 + 1篇教程）
+          - 社媒帖子：7条
+          - 邮件发送：1封
+          - 新增工具：5个
+          
+          ## 周一：工具评测
+          - [ ] 文章：《2026年最好用的 AI 写作工具对比评测》
+          - [ ] 社媒：Twitter 发布评测摘要
+          - [ ] 邮件：本周内容预告
+          
+          ## 周二：使用教程
+          - [ ] 文章：《如何用 AI 工具 10 分钟生成营销文案》
+          - [ ] 社媒：Reddit 发布教程讨论帖
+          
+          ## 周三：AI 工具周报
+          - [ ] 文章：《AI 工具周报 #${WEEK_NUM}》
+          - [ ] 邮件：发送周报给订阅者
+          - [ ] 社媒：Twitter/LinkedIn 发布周报
+          
+          ## 周四：对比文章
+          - [ ] 文章：《ChatGPT vs Claude vs Gemini：2026年哪个最好用？》
+          - [ ] 社媒：Twitter 发起投票
+          
+          ## 周五：工具评测
+          - [ ] 文章：《Midjourney v6 深度评测》
+          - [ ] 社媒：Twitter 发布生成示例图
+          
+          ## 周六：社媒互动
+          - [ ] 回答用户问题
+          - [ ] 转发行业动态
+          - [ ] Reddit/HackerNews 参与讨论
+          
+          ## 周日：复盘与计划
+          - [ ] 生成本周流量报告
+          - [ ] 审核已发布内容
+          - [ ] 生成下周内容计划
+          
+          ## 本周重点关键词
+          1. AI写作工具
+          2. AI绘画工具
+          3. ChatGPT对比
+          4. AI营销文案
+          5. 免费AI工具
+          
+          ## 联盟营销目标
+          - 新增联盟链接：5个
+          - 联盟链接点击：100次
+          - 预计转化：5单
+          
+          ---
+          *本计划由 AI 一人公司自动生成，人类可根据实际情况调整。*
+          EOF
+          
+          echo "✅ 内容计划已生成：ops/reports/weekly-content-plan-${DATE}.md"
+      
+      - name: Create Content Tasks as Issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const date = new Date().toISOString().split('T')[0];
+            const weekNum = new Date().getWeek();
+            
+            const tasks = [
+              { title: `[内容] 周一：发布 AI 写作工具评测`, labels: ['content', 'weekly'] },
+              { title: `[内容] 周二：发布 AI 营销文案教程`, labels: ['content', 'weekly'] },
+              { title: `[内容] 周三：发布 AI 工具周报 #${weekNum}`, labels: ['content', 'weekly', 'newsletter'] },
+              { title: `[内容] 周四：发布 ChatGPT vs Claude 对比`, labels: ['content', 'weekly', 'affiliate'] },
+              { title: `[内容] 周五：发布 Midjourney 深度评测`, labels: ['content', 'weekly', 'affiliate'] },
+              { title: `[运营] 本周社媒互动（7条帖子）`, labels: ['social-media', 'weekly'] },
+              { title: `[运营] 审核新提交工具（目标5个）`, labels: ['operations', 'weekly'] },
+              { title: `[数据] 周日：生成本周流量报告`, labels: ['analytics', 'weekly'] }
+            ];
+            
+            for (const task of tasks) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: task.title,
+                labels: task.labels,
+                body: `## 任务说明\n\n本任务由 AI 一人公司自动创建。\n\n**截止时间**：本周末\n**负责人**：AI（人类审核）\n\n## 完成标准\n- [ ] 内容已发布\n- [ ] SEO 优化完成\n- [ ] 社媒同步发布\n- [ ] 联盟链接已添加（如适用）\n\n## 相关文档\n- 运营手册：ops/playbook.md\n- 内容日历：ops/content-calendar.md\n- 内容模板：ops/content/\n\n---\n*自动生成于 ${date}*`
+              });
+            }
+            
+            console.log(`✅ 已创建 ${tasks.length} 个内容任务 Issues`);
+      
+      - name: Commit Content Plan
+        run: |
+          git config --local user.email "ai-company@users.noreply.github.com"
+          git config --local user.name "AI One-Person Company"
+          git add "ops/reports/weekly-content-plan-*.md"
+          git commit -m "自动生成每周内容计划" || echo "无新内容计划"
+          git push
+      
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-content-plan
+          path: ops/reports/weekly-content-plan-*.md
