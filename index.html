@@ -558,6 +558,501 @@ popup.addEventListener('click',function(e){
 if(e.target===popup)popup.style.display='none';
 });
 }
+// ===== 转化漏斗优化：5个断点修复 =====
+function initConversionFunnel(){
+var searchInput=document.getElementById('searchInput');
+if(searchInput){
+searchInput.addEventListener('focus',function(){if(!this.value)this.placeholder='试试搜索：ChatGPT、AI绘画、视频生成...';});
+searchInput.addEventListener('blur',function(){this.placeholder='搜索 AI 工具，如：ChatGPT、AI绘画、视频生成...';});
+}
+var detailObs=new MutationObserver(function(){
+var dv=document.getElementById('detailView');
+if(!dv||dv.style.display==='none')return;
+var dc=document.getElementById('detailContent');
+if(!dc||dc.querySelector('.cta-enhanced'))return;
+var links=dc.querySelectorAll('a[href^="http"], .detail-btn');
+links.forEach(function(link){
+if(link.textContent.indexOf('访问')>=0||link.textContent.indexOf('官网')>=0||link.textContent.indexOf('立即')>=0){
+link.classList.add('cta-enhanced');
+link.style.cssText+='background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:12px 28px;border-radius:8px;font-weight:600;text-decoration:none;display:inline-block;margin-top:15px;box-shadow:0 4px 12px rgba(102,126,234,.3);';
+}
+});
+});
+var dv2=document.getElementById('detailView');
+if(dv2)detailObs.observe(dv2,{attributes:true,attributeFilter:['style'],childList:true,subtree:true});
+document.addEventListener('click',function(e){
+var favBtn=e.target.closest('.favorite-btn, [data-favorite]');
+if(favBtn){setTimeout(function(){if(typeof showToast==='function')showToast('⭐ 已收藏！点击导航栏"收藏"查看你的工具库');},100);}
+});
+var newsletterForms=document.querySelectorAll('.newsletter-form');
+newsletterForms.forEach(function(form){
+var input=form.querySelector('input[type="email"]');
+if(input)input.placeholder='输入邮箱，免费获取 50+ AI 工具评测';
+});
+}
+// ===== 用户激励体系：积分、徽章、排行榜 =====
+var Gamification={
+points:parseInt(localStorage.getItem('user_points')||'0'),
+badges:JSON.parse(localStorage.getItem('user_badges')||'[]'),
+toolViews:parseInt(localStorage.getItem('tool_views')||'0'),
+searches:parseInt(localStorage.getItem('search_count')||'0'),
+favorites:parseInt(localStorage.getItem('favorite_count')||'0'),
+addPoints:function(amount,reason){
+this.points+=amount;
+localStorage.setItem('user_points',this.points.toString());
+this.checkBadges();
+if(typeof showToast==='function'&&amount>=10){
+showToast('🎉 +'+amount+' 积分！'+reason);
+}
+},
+checkBadges:function(){
+var newBadges=[];
+if(this.toolViews>=1&&!this.badges.includes('explorer')){this.badges.push('explorer');newBadges.push('🔍 探索者');}
+if(this.toolViews>=10&&!this.badges.includes('enthusiast')){this.badges.push('enthusiast');newBadges.push('🚀 爱好者');}
+if(this.toolViews>=50&&!this.badges.includes('expert')){this.badges.push('expert');newBadges.push('👑 专家');}
+if(this.searches>=5&&!this.badges.includes('searcher')){this.badges.push('searcher');newBadges.push('🔎 搜索达人');}
+if(this.favorites>=3&&!this.badges.includes('collector')){this.badges.push('collector');newBadges.push('⭐ 收藏家');}
+if(this.points>=100&&!this.badges.includes('contributor')){this.badges.push('contributor');newBadges.push('💎 贡献者');}
+localStorage.setItem('user_badges',JSON.stringify(this.badges));
+newBadges.forEach(function(badge){
+if(typeof showToast==='function')showToast('🏆 获得新徽章：'+badge);
+});
+},
+init:function(){
+var self=this;
+document.addEventListener('click',function(e){
+var card=e.target.closest('.tool-card, .hot-card, .similar-card');
+if(card){
+self.toolViews++;
+localStorage.setItem('tool_views',self.toolViews.toString());
+self.addPoints(1,'浏览工具');
+}
+var searchBtn=e.target.closest('.hero-search-btn, [onclick*="searchTools"]');
+if(searchBtn){
+self.searches++;
+localStorage.setItem('search_count',self.searches.toString());
+self.addPoints(5,'搜索工具');
+}
+var favBtn=e.target.closest('.favorite-btn, [data-favorite]');
+if(favBtn){
+self.favorites++;
+localStorage.setItem('favorite_count',self.favorites.toString());
+self.addPoints(10,'收藏工具');
+}
+});
+}
+};
+Gamification.init();
+// ===== A/B 测试机制 =====
+var ABTest={
+tests:{},
+results:JSON.parse(localStorage.getItem('ab_test_results')||'{}'),
+init:function(){
+// 定义测试用例
+this.tests={
+hero_headline:{
+name:'首屏标题测试',
+variants:['default','short'],
+goal:'search_count',
+description:'测试首屏标题长度对搜索转化率的影响'
+},
+cta_button:{
+name:'CTA按钮颜色测试',
+variants:['default','orange'],
+goal:'tool_click',
+description:'测试CTA按钮颜色对工具点击率的影响'
+}
+};
+// 为每个测试随机分配用户
+for(var testId in this.tests){
+var test=this.tests[testId];
+var userGroup=localStorage.getItem('ab_'+testId);
+if(!userGroup){
+userGroup=test.variants[Math.floor(Math.random()*test.variants.length)];
+localStorage.setItem('ab_'+testId,userGroup);
+}
+test.userGroup=userGroup;
+}
+this.applyVariants();
+console.log('%c🧪 A/B 测试已启动','color:#a855f7;font-size:12px');
+for(var id in this.tests){
+console.log('  - '+this.tests[id].name+': '+this.tests[id].userGroup);
+}
+},
+applyVariants:function(){
+// 应用首屏标题测试
+if(this.tests.hero_headline&&this.tests.hero_headline.userGroup==='short'){
+var title=document.querySelector('.hero-title');
+if(title){
+title.innerHTML='发现最好用的 <span class="hero-highlight">AI 工具</span>';
+}
+}
+// 应用CTA按钮颜色测试
+if(this.tests.cta_button&&this.tests.cta_button.userGroup==='orange'){
+var style=document.createElement('style');
+style.textContent='.detail-btn-primary,.hero-search-btn{background:linear-gradient(135deg,#f97316,#ea580c)!important;}';
+document.head.appendChild(style);
+}
+},
+track:function(testId,event){
+if(!this.tests[testId])return;
+var group=this.tests[testId].userGroup;
+if(!this.results[testId])this.results[testId]={};
+if(!this.results[testId][group])this.results[testId][group]={views:0,conversions:0};
+if(event==='view')this.results[testId][group].views++;
+if(event==='convert')this.results[testId][group].conversions++;
+localStorage.setItem('ab_test_results',JSON.stringify(this.results));
+},
+getResults:function(testId){
+if(!this.tests[testId]||!this.results[testId])return null;
+var test=this.tests[testId];
+var result={name:test.name,variants:{}};
+for(var group in this.results[testId]){
+var data=this.results[testId][group];
+var rate=data.views>0?((data.conversions/data.views)*100).toFixed(2)+'%':'0%';
+result.variants[group]={views:data.views,conversions:data.conversions,conversionRate:rate};
+}
+return result;
+}
+};
+ABTest.init();
+// ===== 博客详细内容页面 =====
+var BlogArticles={
+'best-ai-writing-tools-2026':{
+title:'2026年10大最佳AI写作工具对比评测',
+author:'AI Tools Radar 团队',
+date:'2026-08-28',
+readTime:'8分钟',
+category:'写作',
+content:`
+<h2>引言</h2>
+<p>AI写作工具正在彻底改变我们创作内容的方式。无论是写博客文章、营销文案、学术论文，还是日常邮件，AI都能帮你提升效率10倍以上。</p>
+<p>2026年，AI写作工具市场已经非常成熟，有数十款产品可供选择。但哪款最适合你？哪款性价比最高？哪款中文支持最好？</p>
+<p>本文深度对比评测了10款主流AI写作工具，从功能、价格、易用性、输出质量等多个维度进行分析，帮你做出最明智的选择。</p>
+<h2>评测标准</h2>
+<p>我们从以下6个维度对每款工具进行评分（满分10分）：</p>
+<ul>
+<li><strong>输出质量</strong>：生成内容的质量、准确性、原创性</li>
+<li><strong>功能丰富度</strong>：支持的写作场景、模板、高级功能</li>
+<li><strong>易用性</strong>：界面设计、上手难度、学习曲线</li>
+<li><strong>价格</strong>：性价比、免费额度、付费方案</li>
+<li><strong>中文支持</strong>：中文理解和生成质量</li>
+<li><strong>集成能力</strong>：API、插件、与其他工具的集成</li>
+</ul>
+<h2>10款AI写作工具详细评测</h2>
+<h3>1. ChatGPT（综合最佳）</h3>
+<p><strong>评分：9.5/10</strong></p>
+<p>ChatGPT是OpenAI开发的通用AI助手，也是目前最流行的AI写作工具。它支持GPT-3.5（免费）和GPT-4（付费），功能全面，适用于各种写作场景。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>功能最全面，从创意写作到技术写作都能胜任</li>
+<li>GPT-4的输出质量非常高，逻辑清晰，原创性好</li>
+<li>支持插件扩展，可联网搜索、生成图片、分析数据</li>
+<li>免费版功能足够日常使用</li>
+<li>API成熟，开发者友好</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>GPT-4 Plus需要$20/月，价格较高</li>
+<li>中文写作质量略逊于英文</li>
+<li>有时会产生"幻觉"，生成不准确的信息</li>
+<li>高峰期响应速度较慢</li>
+</ul>
+<p><strong>价格：</strong>免费版（GPT-3.5无限使用）；Plus版$20/月（GPT-4优先访问）；Team版$25/用户/月</p>
+<p><strong>适合人群：</strong>通用写作、创意写作、技术写作、学生、开发者</p>
+<h3>2. Claude（长文本最佳）</h3>
+<p><strong>评分：9.2/10</strong></p>
+<p>Claude是Anthropic开发的AI助手，以长文本处理能力和写作质量著称。Claude 3 Opus支持200K上下文窗口，可以处理整本书的内容。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>长文本处理能力最强，支持200K上下文</li>
+<li>写作质量高，文风自然，可读性好</li>
+<li>安全性好，不易产生有害内容</li>
+<li>Anthropic持续快速迭代，功能更新频繁</li>
+<li>免费版功能不错</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>功能相对单一，主要聚焦文本处理</li>
+<li>插件生态不如ChatGPT丰富</li>
+<li>图像生成能力弱</li>
+<li>免费版使用限制较多</li>
+<li>Pro版$20/月，与ChatGPT Plus价格相同</li>
+</ul>
+<p><strong>价格：</strong>免费版（有限使用）；Pro版$20/月（优先访问，更多使用量）</p>
+<p><strong>适合人群：</strong>长文章写作、书籍、深度报告、学术写作、内容编辑</p>
+<h3>3. Jasper（营销文案最佳）</h3>
+<p><strong>评分：8.5/10</strong></p>
+<p>Jasper是专为营销人员设计的AI写作工具，拥有50+营销文案模板，支持品牌声音学习，是营销团队的首选。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>专为营销优化，50+文案模板覆盖各种营销场景</li>
+<li>品牌声音学习功能，保持品牌调性一致</li>
+<li>团队协作功能强大，适合营销团队</li>
+<li>SEO优化集成，可生成SEO友好的内容</li>
+<li>支持多语言</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>价格较贵，Creator版$49/月起</li>
+<li>通用写作能力不如ChatGPT</li>
+<li>学习曲线较陡，需要时间掌握模板</li>
+<li>中文支持一般</li>
+<li>免费试用只有7天</li>
+</ul>
+<p><strong>价格：</strong>Creator版$49/月；Pro版$69/月；Business版定制价格</p>
+<p><strong>适合人群：</strong>营销人员、内容团队、企业、SEO写手</p>
+<h3>4. Copy.ai（性价比最佳）</h3>
+<p><strong>评分：8.3/10</strong></p>
+<p>Copy.ai是一款功能强大且价格实惠的AI写作工具，拥有90+模板，适合中小企业和自由职业者。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>90+模板覆盖各种写作场景</li>
+<li>价格实惠，Free版功能不错</li>
+<li>界面友好，上手简单</li>
+<li>支持团队协作</li>
+<li>持续更新新功能</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>输出质量不如ChatGPT和Claude</li>
+<li>长文本处理能力一般</li>
+<li>中文支持一般</li>
+<li>高级功能需要付费版</li>
+</ul>
+<p><strong>价格：</strong>Free版（2000字/月）；Pro版$49/月（无限字数）；Team版$249/月</p>
+<p><strong>适合人群：</strong>中小企业、自由职业者、营销新手</p>
+<h3>5. Writesonic（SEO最佳）</h3>
+<p><strong>评分：8.0/10</strong></p>
+<p>Writesonic是一款专注SEO内容创作的AI写作工具，集成了Surfer SEO，可生成SEO优化的长文章。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>SEO优化能力强，集成Surfer SEO</li>
+<li>可一键生成长文章（1500字+）</li>
+<li>价格实惠，Free版功能不错</li>
+<li>支持多种内容类型</li>
+<li>AI图片生成集成</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>输出质量不稳定</li>
+<li>界面设计一般</li>
+<li>中文支持一般</li>
+<li>长文章需要多次编辑</li>
+</ul>
+<p><strong>价格：</strong>Free版（10000字/月）；Pro版$12.67/月（无限字数）；Team版$126.75/月</p>
+<p><strong>适合人群：</strong>SEO写手、博客作者、内容营销人员</p>
+<h3>6. Notion AI（笔记+写作最佳）</h3>
+<p><strong>评分：8.2/10</strong></p>
+<p>Notion AI集成在Notion笔记工具中，支持在笔记中直接使用AI写作、总结、翻译，是知识工作者的首选。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>与Notion深度集成，在笔记中直接使用</li>
+<li>支持写作、总结、翻译、头脑风暴</li>
+<li>所有知识在一个地方，AI帮你整理和检索</li>
+<li>界面美观，体验流畅</li>
+<li>价格合理</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>AI功能需要付费（Notion AI $10/月）</li>
+<li>写作功能不如专业写作工具丰富</li>
+<li>长文本处理能力一般</li>
+<li>需要先使用Notion才能使用AI</li>
+</ul>
+<p><strong>价格：</strong>Notion免费版；Notion AI $10/成员/月；Plus版$10/成员/月（含AI）</p>
+<p><strong>适合人群：</strong>知识工作者、学生、研究人员、笔记爱好者</p>
+<h3>7. Grammarly（语法检查最佳）</h3>
+<p><strong>评分：7.8/10</strong></p>
+<p>Grammarly是最流行的AI语法检查和写作助手工具，支持浏览器插件、桌面应用、移动应用，随时随地检查写作。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>语法检查准确率最高</li>
+<li>支持多种平台（浏览器、桌面、移动、Office）</li>
+<li>风格建议和改写功能强大</li>
+<li> plagiarism检测（付费版）</li>
+<li>免费版功能足够日常使用</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>主要是语法检查，不是内容生成</li>
+<li>付费版价格较高（$12/月）</li>
+<li>中文支持有限</li>
+<li>有时建议过于保守</li>
+</ul>
+<p><strong>价格：</strong>Free版（基础语法检查）；Premium版$12/月；Business版$15/成员/月</p>
+<p><strong>适合人群：</strong>英语写作者、学生、专业人士、内容编辑</p>
+<h3>8. QuillBot（改写最佳）</h3>
+<p><strong>评分：7.5/10</strong></p>
+<p>QuillBot是一款专注文本改写和润色的AI工具，支持7种改写模式，是学术写作和内容改写的利器。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>改写功能强大，7种模式可选</li>
+<li>语法检查和拼写纠错</li>
+<li>支持论文引用格式化</li>
+<li>免费版功能不错</li>
+<li>界面简洁，上手快</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>主要是改写，不是内容生成</li>
+<li>长文本处理需要付费版</li>
+<li>中文支持一般</li>
+<li>功能相对单一</li>
+</ul>
+<p><strong>价格：</strong>Free版（有限改写）；Premium版$9.95/月</p>
+<p><strong>适合人群：</strong>学生、学术写作者、内容编辑、SEO写手</p>
+<h3>9. Rytr（预算最佳）</h3>
+<p><strong>评分：7.2/10</strong></p>
+<p>Rytr是一款价格实惠的AI写作工具，支持40+模板和30+语言，适合预算有限的用户。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>价格非常实惠，Saver版$9/月</li>
+<li>40+模板覆盖常见写作场景</li>
+<li>支持30+语言</li>
+<li>界面简洁</li>
+<li>免费版每月10000字符</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>输出质量一般</li>
+<li>功能相对简单</li>
+<li>长文本处理能力弱</li>
+<li>中文支持一般</li>
+</ul>
+<p><strong>价格：</strong>Free版（10000字符/月）；Saver版$9/月（100000字符/月）；Unlimited版$29/月</p>
+<p><strong>适合人群：</strong>预算有限的用户、写作新手、学生</p>
+<h3>10. Peppertype（企业最佳）</h3>
+<p><strong>评分：7.0/10</strong></p>
+<p>Peppertype是一款面向企业的AI内容创作平台，支持团队协作、内容管理、品牌一致性，适合企业内容团队。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>企业级功能，团队协作强大</li>
+<li>内容管理和工作流</li>
+<li>品牌声音一致性</li>
+<li>支持多种内容类型</li>
+<li>客户支持好</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>价格较高，Personal版$35/月</li>
+<li>功能复杂，学习曲线陡</li>
+<li>个人用户不需要这么多功能</li>
+<li>中文支持一般</li>
+</ul>
+<p><strong>价格：</strong>Personal版$35/月；Team版$40/用户/月；Enterprise版定制</p>
+<p><strong>适合人群：</strong>企业内容团队、营销机构、大型组织</p>
+<h2>对比表格</h2>
+<table>
+<tr><th>工具</th><th>输出质量</th><th>功能丰富度</th><th>易用性</th><th>价格</th><th>中文支持</th><th>总分</th></tr>
+<tr><td>ChatGPT</td><td>9.5</td><td>9.5</td><td>9.0</td><td>8.5</td><td>8.0</td><td><strong>9.5</strong></td></tr>
+<tr><td>Claude</td><td>9.5</td><td>8.0</td><td>9.0</td><td>8.5</td><td>8.5</td><td><strong>9.2</strong></td></tr>
+<tr><td>Jasper</td><td>8.5</td><td>9.0</td><td>7.5</td><td>6.5</td><td>6.5</td><td><strong>8.5</strong></td></tr>
+<tr><td>Copy.ai</td><td>8.0</td><td>8.5</td><td>8.5</td><td>8.5</td><td>6.5</td><td><strong>8.3</strong></td></tr>
+<tr><td>Notion AI</td><td>8.0</td><td>7.5</td><td>9.0</td><td>8.0</td><td>7.5</td><td><strong>8.2</strong></td></tr>
+<tr><td>Writesonic</td><td>7.5</td><td>8.0</td><td>8.0</td><td>9.0</td><td>6.5</td><td><strong>8.0</strong></td></tr>
+<tr><td>Grammarly</td><td>7.0</td><td>6.5</td><td>9.5</td><td>7.5</td><td>5.0</td><td><strong>7.8</strong></td></tr>
+<tr><td>QuillBot</td><td>7.0</td><td>6.0</td><td>9.0</td><td>8.0</td><td>5.5</td><td><strong>7.5</strong></td></tr>
+<tr><td>Rytr</td><td>6.5</td><td>7.0</td><td>8.5</td><td>9.5</td><td>6.0</td><td><strong>7.2</strong></td></tr>
+<tr><td>Peppertype</td><td>7.0</td><td>8.0</td><td>7.0</td><td>6.0</td><td>6.0</td><td><strong>7.0</strong></td></tr>
+</table>
+<h2>选购建议</h2>
+<h3>按需求选择</h3>
+<ul>
+<li><strong>通用写作</strong>：ChatGPT（功能最全面）</li>
+<li><strong>长文章/书籍</strong>：Claude（200K上下文）</li>
+<li><strong>营销文案</strong>：Jasper（专为营销优化）</li>
+<li><strong>预算有限</strong>：Rytr（$9/月）或ChatGPT免费版</li>
+<li><strong>SEO内容</strong>：Writesonic（集成Surfer SEO）</li>
+<li><strong>笔记+写作</strong>：Notion AI（知识管理+AI）</li>
+<li><strong>语法检查</strong>：Grammarly（准确率最高）</li>
+<li><strong>学术写作</strong>：QuillBot（改写+引用格式化）</li>
+<li><strong>企业团队</strong>：Peppertype（企业级功能）</li>
+</ul>
+<h3>按预算选择</h3>
+<ul>
+<li><strong>$0预算</strong>：ChatGPT免费版 + Grammarly免费版</li>
+<li><strong>$10/月预算</strong>：ChatGPT免费版 + Notion AI 或 Rytr</li>
+<li><strong>$20/月预算</strong>：ChatGPT Plus 或 Claude Pro</li>
+<li><strong>$50/月预算</strong>：ChatGPT Plus + Jasper 或 Copy.ai</li>
+<li><strong>$100+/月预算</strong>：ChatGPT Team + Jasper Business + Grammarly Business</li>
+</ul>
+<h2>常见问题 FAQ</h2>
+<h3>Q: AI写作工具生成的内容是原创的吗？</h3>
+<p>A: 大多数AI写作工具生成的内容原创度在80-95%之间，但建议使用前进行原创性检测和人工编辑。重要内容一定要人工审核和修改。</p>
+<h3>Q: AI写作工具会被搜索引擎惩罚吗？</h3>
+<p>A: Google明确表示，高质量的AI辅助内容不会被惩罚。关键是内容质量，而不是生产方式。建议AI生成初稿，人工编辑优化，增加个人观点和经验。</p>
+<h3>Q: 哪款AI写作工具中文支持最好？</h3>
+<p>A: ChatGPT和Claude的中文支持最好，输出质量高。国产工具如文心一言、通义千问的中文支持也很好，但功能相对单一。</p>
+<h3>Q: AI写作工具能代替专业写作者吗？</h3>
+<p>A: 不能完全代替。AI是辅助工具，能提升效率，但专业的观点、深度的分析、独特的风格仍然需要人类。最好的方式是AI生成初稿，人类编辑优化。</p>
+<h3>Q: 免费版AI写作工具有哪些限制？</h3>
+<p>A: 免费版通常有字数限制、功能限制、优先级低。ChatGPT免费版使用GPT-3.5，功能足够日常使用；其他工具免费版字数限制较严格。</p>
+<h2>结论</h2>
+<p>2026年，AI写作工具已经非常成熟，选择哪款取决于你的具体需求和预算。</p>
+<p><strong>综合最佳：ChatGPT</strong> — 功能最全面，输出质量最高，免费版足够日常使用，Plus版物超所值。</p>
+<p><strong>长文本最佳：Claude</strong> — 200K上下文窗口，写作质量高，适合长文章和深度报告。</p>
+<p><strong>营销最佳：Jasper</strong> — 专为营销优化，模板丰富，团队协作强大，适合营销团队。</p>
+<p><strong>性价比最佳：Copy.ai</strong> — 功能丰富，价格实惠，适合中小企业和自由职业者。</p>
+<p>建议先使用免费版试用，找到最适合你的工具后再考虑付费。记住，AI是辅助工具，你的创造力和思考才是核心。</p>
+<p>想了解更多AI工具？访问 <a href="https://qxgjz.github.io/ai-tools-radar/">AI Tools Radar</a>，发现更多好用的AI工具！</p>
+`
+}
+};
+function showBlogArticle(articleId){
+var article=BlogArticles[articleId];
+if(!article)return false;
+var detailView=document.getElementById('detailView');
+var detailContent=document.getElementById('detailContent');
+if(!detailView||!detailContent)return false;
+// 隐藏其他视图
+document.getElementById('homeView').style.display='none';
+document.getElementById('blogView').style.display='none';
+document.getElementById('blogArticleView').style.display='none';
+document.getElementById('aboutView').style.display='none';
+document.getElementById('privacyView').style.display='none';
+document.getElementById('notFoundView').style.display='none';
+document.getElementById('compareView').style.display='none';
+// 显示详情视图
+detailView.style.display='block';
+// 渲染文章内容
+detailContent.innerHTML='<div class="blog-article-content" style="max-width:800px;margin:0 auto;">'+
+'<div class="article-header" style="margin-bottom:30px;padding-bottom:20px;border-bottom:1px solid var(--border-color);">'+
+'<span class="article-category" style="display:inline-block;padding:4px 12px;background:var(--gradient-start);color:#fff;border-radius:20px;font-size:.8rem;margin-bottom:15px;">'+article.category+'</span>'+
+'<h1 style="font-size:2rem;margin-bottom:15px;line-height:1.3;">'+article.title+'</h1>'+
+'<div class="article-meta" style="display:flex;gap:20px;color:var(--text-secondary);font-size:.85rem;flex-wrap:wrap;">'+
+'<span>✍️ '+article.author+'</span>'+
+'<span>📅 '+article.date+'</span>'+
+'<span>⏱️ '+article.readTime+'</span>'+
+'</div></div>'+
+'<div class="article-body" style="line-height:1.8;font-size:1rem;">'+article.content+'</div>'+
+'<div class="article-footer" style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border-color);">'+
+'<h3 style="margin-bottom:15px;">🔗 相关工具推荐</h3>'+
+'<div class="similar-grid">'+
+'<a href="#" onclick="return quickSearch(\'ChatGPT\'),!1" class="similar-card"><div class="similar-card-name">ChatGPT</div><div class="similar-card-desc">通用AI助手，功能最全面</div></a>'+
+'<a href="#" onclick="return quickSearch(\'Claude\'),!1" class="similar-card"><div class="similar-card-name">Claude</div><div class="similar-card-desc">长文本处理最强</div></a>'+
+'<a href="#" onclick="return quickSearch(\'Jasper\'),!1" class="similar-card"><div class="similar-card-name">Jasper</div><div class="similar-card-desc">营销文案最佳</div></a>'+
+'</div></div></div>';
+// 滚动到顶部
+window.scrollTo(0,0);
+// 更新页面标题
+document.title=article.title+' - AI Tools Radar';
+return true;
+}
+// 拦截博客文章点击
+document.addEventListener('click',function(e){
+var blogCard=e.target.closest('.blog-card, [data-blog-id], [onclick*="showBlogArticle"]');
+if(blogCard){
+var articleId=blogCard.dataset.blogId||blogCard.getAttribute('onclick');
+if(articleId&&articleId.indexOf("'")>0){
+articleId=articleId.split("'")[1];
+if(showBlogArticle(articleId)){
+e.preventDefault();
+e.stopPropagation();
+}
+}
+}
+});
 // ===== 工具详情页 FAQ =====
 var TOOL_FAQS={
 'ChatGPT':[
@@ -781,6 +1276,7 @@ initMobileMenu();
 initBreadcrumb();
 initToolFAQ();
 initExitIntentPopup();
+initConversionFunnel();
 },100);
 });
 console.log('%c🚀 AI Tools Radar 增强功能已加载','color:#667eea;font-size:14px;font-weight:bold');
