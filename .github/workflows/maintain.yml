@@ -1,0 +1,72 @@
+name: 网站维护与工具更新提醒
+
+on:
+  schedule:
+    # 每周一早上 8 点（UTC）运行
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+    # 允许手动触发
+
+jobs:
+  check-website:
+    name: 检查网站可访问性
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检查主页
+        run: |
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://qxgjz.github.io/ai-tools-radar/)
+          echo "主页状态码: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::warning::网站主页返回状态码 $HTTP_CODE，可能需要检查"
+            exit 1
+          fi
+          
+      - name: 检查 sitemap.xml
+        run: |
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://qxgjz.github.io/ai-tools-radar/sitemap.xml)
+          echo "sitemap.xml 状态码: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::warning::sitemap.xml 返回状态码 $HTTP_CODE"
+          fi
+          
+      - name: 检查 robots.txt
+        run: |
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://qxgjz.github.io/ai-tools-radar/robots.txt)
+          echo "robots.txt 状态码: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::warning::robots.txt 返回状态码 $HTTP_CODE"
+          fi
+
+  remind-update:
+    name: 提醒更新 AI 工具数据
+    runs-on: ubuntu-latest
+    needs: check-website
+    steps:
+      - name: 创建更新提醒 Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const today = new Date().toISOString().split('T')[0];
+            
+            // 检查是否已有本周的提醒 issue
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'tool-update'
+            });
+            
+            const existing = issues.find(i => i.title.includes(today.slice(0, 7)));
+            
+            if (!existing) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `[工具更新提醒] ${today} - 检查并更新 AI 工具列表`,
+                body: `## 🤖 AI 工具更新提醒\n\n每周提醒：请检查并更新 AI 工具列表。\n\n### 建议检查的数据源\n- [awesome-ai-tools](https://github.com/kostja94/awesome-ai-tools)\n- [awesome-AI](https://github.com/Digidai/awesome-AI/)\n- [Product Hunt AI](https://www.producthunt.com/topics/artificial-intelligence)\n\n### 更新内容\n1. 检查是否有新的热门 AI 工具\n2. 更新已有工具的价格和功能信息\n3. 移除已停止服务的工具\n4. 优化工具描述和标签\n\n### 当前统计\n- 工具总数：请在 script.js 中查看\n- 分类数：6 个（写作、图像、视频、编程、音频、效率）\n\n> 此 issue 由 GitHub Actions 自动创建，更新完成后可关闭。`,
+                labels: ['tool-update', 'automated']
+              });
+              console.log('已创建更新提醒 issue');
+            } else {
+              console.log('本周已有提醒 issue，跳过创建');
+            }
