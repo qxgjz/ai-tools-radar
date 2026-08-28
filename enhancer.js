@@ -614,6 +614,172 @@ self.addPoints(10,'收藏工具');
 }
 };
 Gamification.init();
+// ===== 用户等级系统扩展 =====
+Gamification.levels=[
+{level:1,name:'新手',minPoints:0,icon:'🌱',color:'#94a3b8',privileges:['基础功能']},
+{level:2,name:'探索者',minPoints:50,icon:'🔍',color:'#22c55e',privileges:['基础功能','收藏无限制']},
+{level:3,name:'爱好者',minPoints:200,icon:'🚀',color:'#3b82f6',privileges:['基础功能','收藏无限制','对比无限制']},
+{level:4,name:'专家',minPoints:500,icon:'👑',color:'#a855f7',privileges:['基础功能','收藏无限制','对比无限制','优先审核提交']},
+{level:5,name:'大师',minPoints:1000,icon:'💎',color:'#f59e0b',privileges:['所有功能','社区版主','参与产品决策']}
+];
+Gamification.badgeNames={explorer:'🔍 探索者',enthusiast:'🚀 爱好者',expert:'👑 专家',searcher:'🔎 搜索达人',collector:'⭐ 收藏家',contributor:'💎 贡献者'};
+Gamification.getCurrentLevel=function(){for(var i=this.levels.length-1;i>=0;i--){if(this.points>=this.levels[i].minPoints)return this.levels[i];}return this.levels[0];};
+Gamification.getNextLevel=function(){var c=this.getCurrentLevel();var idx=this.levels.indexOf(c);return idx<this.levels.length-1?this.levels[idx+1]:null;};
+Gamification.getProgress=function(){var c=this.getCurrentLevel();var n=this.getNextLevel();if(!n)return 100;return Math.min(100,Math.round(((this.points-c.minPoints)/(n.minPoints-c.minPoints))*100));};
+// ===== 用户个人中心页面 =====
+function showUserProfile(){
+var profileView=document.getElementById('profileView');
+if(!profileView){
+profileView=document.createElement('div');
+profileView.id='profileView';
+profileView.style.display='none';
+var main=document.querySelector('.main-content')||document.body;
+main.appendChild(profileView);
+}
+var views=['homeView','blogView','blogArticleView','aboutView','privacyView','notFoundView','compareView','detailView'];
+views.forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
+profileView.style.display='block';
+var level=Gamification.getCurrentLevel();
+var next=Gamification.getNextLevel();
+var progress=Gamification.getProgress();
+var badgeHtml=Gamification.badges.map(function(b){return '<span style="display:inline-block;padding:8px 16px;background:var(--bg-secondary);border-radius:20px;margin:4px;font-size:.9rem;border:1px solid var(--border-color);">'+(Gamification.badgeNames[b]||b)+'</span>';}).join('')||'<p style="color:var(--text-secondary);">还没有获得徽章，开始探索吧！</p>';
+var privHtml=level.privileges.map(function(p){return '<li style="margin:5px 0;">✅ '+p+'</li>';}).join('');
+var nextPrivHtml=next?next.privileges.filter(function(p){return level.privileges.indexOf(p)<0;}).map(function(p){return '<li style="margin:5px 0;color:var(--text-secondary);">🔒 '+p+'</li>';}).join(''):'';
+profileView.innerHTML='<div style="max-width:800px;margin:0 auto;padding:20px;">'+
+'<div style="background:linear-gradient(135deg,'+level.color+',#667eea);border-radius:16px;padding:30px;color:#fff;margin-bottom:25px;box-shadow:0 8px 32px rgba(102,126,234,.3);">'+
+'<div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">'+
+'<div style="font-size:4rem;">'+level.icon+'</div>'+
+'<div style="flex:1;min-width:200px;">'+
+'<h2 style="margin:0;font-size:1.5rem;">'+level.name+'</h2>'+
+'<p style="margin:5px 0;opacity:.9;">Lv.'+level.level+'</p>'+
+'<p style="margin:0;font-size:1.3rem;font-weight:bold;">'+Gamification.points+' 积分</p>'+
+'</div></div>'+
+(next?'<div style="margin-top:20px;"><p style="margin:0 0 8px;font-size:.85rem;opacity:.9;">距离 '+next.name+' 还需 '+(next.minPoints-Gamification.points)+' 积分</p>'+
+'<div style="background:rgba(255,255,255,.3);border-radius:10px;height:10px;overflow:hidden;"><div style="background:#fff;height:100%;width:'+progress+'%;border-radius:10px;transition:width .5s;"></div></div></div>':'<p style="margin-top:20px;">🎉 已达到最高等级！</p>')+
+'</div>'+
+'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;margin-bottom:25px;">'+
+'<div style="background:var(--bg-secondary);padding:20px;border-radius:12px;text-align:center;"><div style="font-size:2rem;margin-bottom:5px;">👀</div><div style="font-size:1.5rem;font-weight:bold;">'+Gamification.toolViews+'</div><div style="font-size:.8rem;color:var(--text-secondary);">浏览工具</div></div>'+
+'<div style="background:var(--bg-secondary);padding:20px;border-radius:12px;text-align:center;"><div style="font-size:2rem;margin-bottom:5px;">🔎</div><div style="font-size:1.5rem;font-weight:bold;">'+Gamification.searches+'</div><div style="font-size:.8rem;color:var(--text-secondary);">搜索次数</div></div>'+
+'<div style="background:var(--bg-secondary);padding:20px;border-radius:12px;text-align:center;"><div style="font-size:2rem;margin-bottom:5px;">⭐</div><div style="font-size:1.5rem;font-weight:bold;">'+Gamification.favorites+'</div><div style="font-size:.8rem;color:var(--text-secondary);">收藏工具</div></div>'+
+'<div style="background:var(--bg-secondary);padding:20px;border-radius:12px;text-align:center;"><div style="font-size:2rem;margin-bottom:5px;">🏆</div><div style="font-size:1.5rem;font-weight:bold;">'+Gamification.badges.length+'</div><div style="font-size:.8rem;color:var(--text-secondary);">获得徽章</div></div>'+
+'</div>'+
+'<div style="background:var(--bg-secondary);padding:25px;border-radius:12px;margin-bottom:25px;">'+
+'<h3 style="margin:0 0 15px;font-size:1.1rem;">🏆 我的徽章</h3>'+badgeHtml+
+'</div>'+
+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:25px;">'+
+'<div style="background:var(--bg-secondary);padding:20px;border-radius:12px;"><h4 style="margin:0 0 10px;color:'+level.color+';">当前特权</h4><ul style="margin:0;padding-left:20px;">'+privHtml+'</ul></div>'+
+(next?'<div style="background:var(--bg-secondary);padding:20px;border-radius:12px;"><h4 style="margin:0 0 10px;color:'+next.color+';">下一等级特权</h4><ul style="margin:0;padding-left:20px;">'+nextPrivHtml+'</ul></div>':'')+
+'</div>'+
+'<div style="background:var(--bg-secondary);padding:25px;border-radius:12px;">'+
+'<h3 style="margin:0 0 15px;font-size:1.1rem;">📈 如何获得更多积分？</h3>'+
+'<ul style="margin:0;padding-left:20px;line-height:2;">'+
+'<li>浏览工具：+1 积分</li>'+
+'<li>搜索工具：+5 积分</li>'+
+'<li>收藏工具：+10 积分</li>'+
+'<li>发表评论：+5 积分（即将上线）</li>'+
+'<li>提交工具被采纳：+50 积分（即将上线）</li>'+
+'<li>邀请好友：+20 积分（即将上线）</li>'+
+'</ul></div></div>';
+window.scrollTo(0,0);
+document.title='个人中心 - AI Tools Radar';
+}
+// 导航栏添加用户入口
+function addUserNavEntry(){
+var nav=document.querySelector('.nav-links')||document.querySelector('nav');
+if(!nav||document.getElementById('userNavEntry'))return;
+var entry=document.createElement('a');
+entry.id='userNavEntry';
+entry.href='#/profile';
+entry.textContent='👤 我的';
+entry.style.cursor='pointer';
+entry.addEventListener('click',function(e){e.preventDefault();showUserProfile();});
+nav.insertBefore(entry,nav.firstChild);
+}
+// ===== 基于内容的推荐系统 =====
+var Recommender={
+toolFeatures:{},
+similarityCache:{},
+extractFeatures:function(toolName,toolData){
+var features={name:toolName,tags:[],category:'',price:'free',description:''};
+if(toolData){
+features.category=toolData.category||'';
+features.tags=toolData.tags||[];
+features.price=toolData.price||'free';
+features.description=toolData.description||'';
+}
+return features;
+},
+calculateSimilarity:function(toolA,toolB){
+var score=0;
+if(toolA.category&&toolB.category&&toolA.category===toolB.category)score+=40;
+var commonTags=toolA.tags.filter(function(t){return toolB.tags.indexOf(t)>=0;});
+score+=commonTags.length*15;
+if(toolA.price===toolB.price)score+=10;
+var descA=toolA.description.toLowerCase();
+var descB=toolB.description.toLowerCase();
+var keywords=['ai','写作','图像','视频','音频','编程','设计','营销','效率','对话','生成','编辑','分析','学习','办公'];
+var commonKw=keywords.filter(function(k){return descA.indexOf(k)>=0&&descB.indexOf(k)>=0;});
+score+=commonKw.length*5;
+return Math.min(100,score);
+},
+getRecommendations:function(currentToolName,count){
+var self=this;
+var tools=document.querySelectorAll('.tool-card, .hot-card');
+var scores=[];
+tools.forEach(function(card){
+var nameEl=card.querySelector('.tool-card-name, .hot-card-name, h3, h4');
+var name=nameEl?nameEl.textContent.trim():'';
+if(!name||name===currentToolName)return;
+var catEl=card.querySelector('.tool-card-category, .category-tag, [class*="category"]');
+var category=catEl?catEl.textContent.trim():'';
+var descEl=card.querySelector('.tool-card-desc, .hot-card-desc, p');
+var description=descEl?descEl.textContent.trim():'';
+var toolA={name:currentToolName,category:self.currentCategory||'',tags:self.currentTags||[],price:self.currentPrice||'free',description:self.currentDescription||''};
+var toolB={name:name,category:category,tags:[],price:'free',description:description};
+var score=self.calculateSimilarity(toolA,toolB);
+if(score>0)scores.push({name:name,score:score,element:card});
+});
+scores.sort(function(a,b){return b.score-a.score;});
+return scores.slice(0,count||5);
+},
+showRecommendations:function(toolName){
+var recSection=document.getElementById('recommendationSection');
+if(recSection)recSection.remove();
+var recs=this.getRecommendations(toolName,5);
+if(recs.length===0)return;
+var detailContent=document.getElementById('detailContent');
+if(!detailContent)return;
+recSection=document.createElement('div');
+recSection.id='recommendationSection';
+recSection.style.marginTop='30px';
+recSection.style.paddingTop='20px';
+recSection.style.borderTop='1px solid var(--border-color)';
+var html='<h3 style="margin-bottom:15px;font-size:1.1rem;">🎯 为你推荐</h3>';
+html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;">';
+recs.forEach(function(rec){
+html+='<a href="#" onclick="return quickSearch(\''+rec.name.replace(/'/g,"\\'")+'\'),!1" style="padding:15px;background:var(--bg-secondary);border-radius:10px;text-decoration:none;color:var(--text-primary);border:1px solid var(--border-color);transition:all .2s;display:block;">'+
+'<div style="font-weight:600;margin-bottom:5px;">'+rec.name+'</div>'+
+'<div style="font-size:.75rem;color:var(--text-secondary);">匹配度 '+rec.score+'%</div></a>';
+});
+html+='</div>';
+recSection.innerHTML=html;
+detailContent.appendChild(recSection);
+}
+};
+// 监听工具详情页，自动显示推荐
+var recObserver=new MutationObserver(function(){
+var detailView=document.getElementById('detailView');
+if(!detailView||detailView.style.display==='none')return;
+var detailContent=document.getElementById('detailContent');
+if(!detailContent)return;
+var titleEl=detailContent.querySelector('h1, h2, .detail-title');
+if(titleEl&&!document.getElementById('recommendationSection')){
+var toolName=titleEl.textContent.trim();
+setTimeout(function(){Recommender.showRecommendations(toolName);},300);
+}
+});
+var dv=document.getElementById('detailView');
+if(dv)recObserver.observe(dv,{attributes:true,attributeFilter:['style'],childList:true,subtree:true});
 // ===== A/B 测试机制 =====
 var ABTest={
 tests:{},
@@ -1248,6 +1414,7 @@ initBreadcrumb();
 initToolFAQ();
 initExitIntentPopup();
 initConversionFunnel();
+addUserNavEntry();
 },100);
 });
 console.log('%c🚀 AI Tools Radar 增强功能已加载','color:#667eea;font-size:14px;font-weight:bold');
