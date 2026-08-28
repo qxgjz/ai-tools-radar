@@ -1,21 +1,58 @@
 {
-    "name": "AI Tools Radar - AI工具导航",
-    "short_name": "AI Tools Radar",
-    "description": "发现最优质的 AI 工具，120+ 精选工具，含详细评测、价格对比和用户评分。",
-    "start_url": "./index.html",
-    "display": "standalone",
-    "background_color": "#f5f7fa",
-    "theme_color": "#667eea",
-    "orientation": "portrait-primary",
-    "icons": [
-        {
-            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>",
-            "sizes": "any",
-            "type": "image/svg+xml",
-            "purpose": "any maskable"
-        }
-    ],
-    "categories": ["productivity", "utilities", "education"],
-    "lang": "zh-CN",
-    "dir": "ltr"
+  "name": "AI工具雷达 - AI Tools Radar",
+  "short_name": "AI工具雷达",
+  "description": "30款AI工具实测对比，帮你选对不选贵。覆盖AI写作、图像、视频、编程、音频、效率6大领域，每款工具都有真实测试数据。",
+  "start_url": "/ai-tools-radar/",
+  "scope": "/ai-tools-radar/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f0f0f",
+  "theme_color": "#667eea",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities", "education"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "搜索工具",
+      "short_name": "搜索",
+      "description": "快速搜索AI工具",
+      "url": "/ai-tools-radar/#search",
+      "icons": [{ "src": "icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "深度评测",
+      "short_name": "评测",
+      "description": "查看深度评测文章",
+      "url": "/ai-tools-radar/#blog",
+      "icons": [{ "src": "icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "工具对比",
+      "short_name": "对比",
+      "description": "对比AI工具",
+      "url": "/ai-tools-radar/#compare",
+      "icons": [{ "src": "icon.svg", "sizes": "any" }]
+    }
+  ],
+  "prefer_related_applications": false
 }
