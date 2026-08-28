@@ -442,3 +442,53 @@ footer a {
         flex-direction: column;
     }
 }
+
+/* ========== 广告位样式 ========== */
+.ad-container {
+    background: var(--bg-secondary);
+    border: 1px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 25px 0;
+    text-align: center;
+    position: relative;
+}
+
+.ad-banner {
+    min-height: 100px;
+}
+
+.ad-native {
+    min-height: 120px;
+}
+
+.ad-label {
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ad-placeholder {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    padding: 20px 0;
+    line-height: 1.8;
+}
+
+/* AdSense ins 标签样式 */
+ins.adsbygoogle {
+    background: transparent !important;
+}
+
+/* 暗色模式下广告位 */
+body.dark .ad-container {
+    border-color: #475569;
+}
+
+body.dark .ad-placeholder {
+    color: #64748b;
+}
