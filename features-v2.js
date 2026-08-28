@@ -252,6 +252,96 @@ var ToolMetricsDB = {
       pros: ['与Figma深度集成', 'UI设计生成质量高', '自动布局', '组件生成', '设计师生态好'],
       cons: ['需要Figma订阅', '主要适合UI设计', '通用设计能力一般', '学习曲线'],
       benchmark: { 'UI设计': 9.2, '集成度': 9.5, '组件生成': 8.8 }
+    },
+    'claude-code': {
+      responseSpeed: 8.8, outputQuality: 9.6, apiLatency: 1200,
+      freeTier: '有限（免费额度）', contextWindow: '200K tokens',
+      multilingual: 9.0, codingAbility: 9.5, creativity: 8.5, accuracy: 9.3,
+      lastTested: '2026-08-25', testVersion: 'Claude 3.5 Sonnet',
+      pros: ['代码理解最强', '超长上下文', '重构质量高', 'CLI体验优秀'],
+      cons: ['无IDE插件', '实时补全弱', '按token计费', '无私有部署'],
+      benchmark: { '代码理解': 9.8, '重构质量': 9.5, 'Bug修复': 9.2 }
+    },
+    'windsurf': {
+      responseSpeed: 9.2, outputQuality: 9.0, apiLatency: 400,
+      freeTier: '免费版功能强', contextWindow: '整个代码库',
+      multilingual: 8.5, codingAbility: 9.2, creativity: 8.0, accuracy: 8.8,
+      lastTested: '2026-08-25', testVersion: 'Cascade',
+      pros: ['免费版强大', '多模型支持', 'Cascade Agent模式', '可私有部署'],
+      cons: ['代码库索引略逊Cursor', 'UI细节不如Cursor', '社区较小'],
+      benchmark: { '代码补全': 8.8, 'Agent模式': 9.0, '多模型': 9.2 }
+    },
+    'amazon-q': {
+      responseSpeed: 9.0, outputQuality: 8.0, apiLatency: 300,
+      freeTier: '个人开发者免费', contextWindow: '8K tokens',
+      multilingual: 7.5, codingAbility: 8.5, creativity: 6.5, accuracy: 8.0,
+      lastTested: '2026-08-22', testVersion: 'Amazon Q Developer',
+      pros: ['个人免费', 'AWS集成最好', '安全扫描实用', 'IDE支持广'],
+      cons: ['非AWS场景一般', 'Chat功能弱', '大项目理解有限', '模型更新慢'],
+      benchmark: { 'AWS代码': 9.2, '安全扫描': 8.8, '通用代码': 7.5 }
+    },
+    'tabnine': {
+      responseSpeed: 9.5, outputQuality: 8.0, apiLatency: 150,
+      freeTier: '有限免费版', contextWindow: '4K tokens',
+      multilingual: 7.0, codingAbility: 8.2, creativity: 6.0, accuracy: 8.0,
+      lastTested: '2026-08-20', testVersion: 'Tabnine Enterprise',
+      pros: ['隐私安全最好', '可本地部署', '团队微调', '支持离线'],
+      cons: ['代码质量不如GPT', '功能简单', '价格贵', '模型更新慢'],
+      benchmark: { '隐私安全': 10, '本地部署': 9.5, '代码质量': 7.8 }
+    },
+    'coderabbit': {
+      responseSpeed: 8.5, outputQuality: 9.0, apiLatency: 5000,
+      freeTier: '开源项目免费', contextWindow: '整个PR',
+      multilingual: 8.0, codingAbility: 9.0, creativity: 7.0, accuracy: 8.8,
+      lastTested: '2026-08-18', testVersion: '最新',
+      pros: ['代码审查质量高', '行内评论', 'PR摘要', '可自定义规则'],
+      cons: ['只做代码审查', '偶尔误报', '大PR审查慢', '企业版贵'],
+      benchmark: { '审查质量': 9.0, 'Bug发现': 8.8, '效率提升': 8.5 }
+    },
+    'replit': {
+      responseSpeed: 8.5, outputQuality: 7.5, apiLatency: 3000,
+      freeTier: '免费版有额度', contextWindow: '整个项目',
+      multilingual: 7.5, codingAbility: 8.0, creativity: 7.0, accuracy: 7.5,
+      lastTested: '2026-08-15', testVersion: 'Replit Agent',
+      pros: ['零配置', '一键部署', '多语言支持', '协作功能好'],
+      cons: ['不适合大型项目', '生成质量一般', '性能受限', '高级功能付费'],
+      benchmark: { '易用性': 9.5, '部署速度': 9.0, '代码质量': 7.5 }
+    },
+    'sourcegraph-cody': {
+      responseSpeed: 9.0, outputQuality: 8.5, apiLatency: 500,
+      freeTier: '个人免费', contextWindow: '整个代码库',
+      multilingual: 7.5, codingAbility: 8.8, creativity: 7.0, accuracy: 8.5,
+      lastTested: '2026-08-12', testVersion: 'Cody',
+      pros: ['代码搜索最强', '大型代码库理解好', '可私有部署', '企业安全'],
+      cons: ['补全质量不如Copilot', '部署复杂', '小项目优势不明显', '企业版贵'],
+      benchmark: { '代码搜索': 9.8, '大库理解': 9.2, '补全质量': 8.0 }
+    },
+    'hugging-face': {
+      responseSpeed: 8.0, outputQuality: 8.5, apiLatency: 2000,
+      freeTier: '免费额度 generous', contextWindow: '取决于模型',
+      multilingual: 8.0, codingAbility: 7.0, creativity: 8.5, accuracy: 8.0,
+      lastTested: '2026-08-10', testVersion: 'HF Hub',
+      pros: ['模型生态最丰富', '开源模型免费', '社区活跃', 'Inference API方便'],
+      cons: ['界面复杂', '模型质量参差不齐', '免费额度有限', '学习曲线陡'],
+      benchmark: { '模型数量': 10, '开源生态': 9.8, '易用性': 7.0 }
+    },
+    'zapier': {
+      responseSpeed: 9.0, outputQuality: 8.5, apiLatency: 1000,
+      freeTier: '100任务/月免费', contextWindow: 'N/A',
+      multilingual: 7.0, codingAbility: 0, creativity: 7.5, accuracy: 8.5,
+      lastTested: '2026-08-08', testVersion: 'Zapier AI',
+      pros: ['集成最丰富(5000+)', 'AI创建工作流', '无需编程', '可靠性高'],
+      cons: ['高级功能贵', '复杂工作流学习陡', '任务次数限制', '自定义有限'],
+      benchmark: { '集成数量': 10, '易用性': 8.5, '价格': 6.5 }
+    },
+    'obsidian': {
+      responseSpeed: 9.8, outputQuality: 8.5, apiLatency: 0,
+      freeTier: '个人免费', contextWindow: '整个知识库',
+      multilingual: 8.0, codingAbility: 0, creativity: 8.0, accuracy: 9.0,
+      lastTested: '2026-08-05', testVersion: 'Obsidian 1.7',
+      pros: ['本地存储数据安全', '双向链接强大', '插件生态丰富', '完全离线可用'],
+      cons: ['无原生AI功能(需插件)', '学习曲线陡', '同步需付费', '移动端体验一般'],
+      benchmark: { '本地存储': 10, '双向链接': 9.5, '插件生态': 9.0 }
     }
   },
 
