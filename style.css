@@ -93,4 +93,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 /* ===== 导航栏对比按钮 ===== */
 .nav-compare-btn{background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:4px}
 .nav-compare-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(240,147,251,.4)}
-@media(max-width:768px){.nav-compare-btn{display:none}}
+@media(max-width:768px){.nav-compare-btn{display:none}
+#mobileMenuBtn{display:block!important}
+.nav-links{display:none!important}
+.tool-pros-cons{grid-template-columns:1fr!important}
+}
