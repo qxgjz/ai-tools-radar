@@ -1,5 +1,63 @@
 (function(){
 'use strict';
+// ===== Cookie 同意横幅（GDPR合规）=====
+var CookieManager={
+getConsent:function(){return localStorage.getItem('cookie_consent');},
+setConsent:function(type){
+localStorage.setItem('cookie_consent',type);
+localStorage.setItem('cookie_consent_date',new Date().toISOString());
+this.hideBanner();
+if(type==='all'){this.loadAllCookies();}
+},
+hideBanner:function(){var b=document.getElementById('cookieBanner');if(b)b.style.display='none';},
+showBanner:function(){
+if(this.getConsent())return;
+var banner=document.createElement('div');
+banner.id='cookieBanner';
+banner.style.cssText='position:fixed;bottom:0;left:0;right:0;background:var(--bg-primary,#fff);border-top:1px solid var(--border-color,#ddd);box-shadow:0 -4px 20px rgba(0,0,0,.1);padding:20px;z-index:9999;display:flex;align-items:center;gap:20px;flex-wrap:wrap;max-width:100%;';
+banner.innerHTML='<div style="flex:1;min-width:250px;"><strong style="font-size:1rem;">🍪 Cookie 同意</strong><p style="margin:5px 0 0;font-size:.85rem;color:var(--text-secondary,#666);">我们使用 Cookie 来提升您的浏览体验、分析流量和提供个性化内容。您可以选择接受全部、仅必要或自定义。详见<a href="#/privacy" onclick="return navigateTo(\'privacy\'),!1" style="color:#667eea;">隐私政策</a>。</p></div>'+
+'<div style="display:flex;gap:10px;flex-wrap:wrap;">'+
+'<button id="cookieAcceptAll" style="padding:10px 20px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:.85rem;">接受全部</button>'+
+'<button id="cookieNecessary" style="padding:10px 20px;background:var(--bg-secondary,#f5f5f5);color:var(--text-primary,#333);border:1px solid var(--border-color,#ddd);border-radius:8px;cursor:pointer;font-size:.85rem;">仅必要</button>'+
+'<button id="cookieCustomize" style="padding:10px 20px;background:none;color:var(--text-secondary,#666);border:none;cursor:pointer;font-size:.85rem;text-decoration:underline;">自定义</button>'+
+'</div>';
+document.body.appendChild(banner);
+var self=this;
+document.getElementById('cookieAcceptAll').addEventListener('click',function(){self.setConsent('all');if(typeof showToast==='function')showToast('✅ 已接受全部Cookie');});
+document.getElementById('cookieNecessary').addEventListener('click',function(){self.setConsent('necessary');if(typeof showToast==='function')showToast('✅ 仅启用必要Cookie');});
+document.getElementById('cookieCustomize').addEventListener('click',function(){self.showCustomizePanel();});
+},
+showCustomizePanel:function(){
+var panel=document.createElement('div');
+panel.id='cookieCustomizePanel';
+panel.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg-primary,#fff);border-radius:16px;padding:30px;box-shadow:0 20px 60px rgba(0,0,0,.3);z-index:10000;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;';
+panel.innerHTML='<h3 style="margin:0 0 20px;">🍪 Cookie 自定义设置</h3>'+
+'<div style="margin-bottom:15px;"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" id="cookieNecessaryChk" checked disabled> <div><strong>必要Cookie</strong><p style="margin:2px 0 0;font-size:.8rem;color:var(--text-secondary,#666);">网站正常运行所必需的，无法关闭</p></div></label></div>'+
+'<div style="margin-bottom:15px;"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" id="cookieAnalyticsChk"> <div><strong>分析Cookie</strong><p style="margin:2px 0 0;font-size:.8rem;color:var(--text-secondary,#666);">帮助我们了解访客如何使用网站（Google Analytics）</p></div></label></div>'+
+'<div style="margin-bottom:15px;"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" id="cookieAdChk"> <div><strong>广告Cookie</strong><p style="margin:2px 0 0;font-size:.8rem;color:var(--text-secondary,#666);">用于展示个性化广告（Google AdSense）</p></div></label></div>'+
+'<div style="margin-bottom:20px;"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;"><input type="checkbox" id="cookieThirdPartyChk"> <div><strong>第三方Cookie</strong><p style="margin:2px 0 0;font-size:.8rem;color:var(--text-secondary,#666);">Giscus评论、社交媒体等第三方服务</p></div></label></div>'+
+'<div style="display:flex;gap:10px;justify-content:flex-end;"><button id="cookieSaveCustom" style="padding:10px 24px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;">保存设置</button></div>';
+document.body.appendChild(panel);
+var self=this;
+document.getElementById('cookieSaveCustom').addEventListener('click',function(){
+var analytics=document.getElementById('cookieAnalyticsChk').checked;
+var ad=document.getElementById('cookieAdChk').checked;
+var third=document.getElementById('cookieThirdPartyChk').checked;
+var type='custom_'+(analytics?'1':'0')+(ad?'1':'0')+(third?'1':'0');
+self.setConsent(type);
+panel.remove();
+if(typeof showToast==='function')showToast('✅ Cookie设置已保存');
+});
+},
+loadAllCookies:function(){
+// 接受全部后，可以加载分析和广告脚本
+console.log('%c🍪 已接受全部Cookie','color:#22c55e;font-size:12px');
+}
+};
+// 页面加载后显示Cookie横幅（延迟1秒，不阻塞首屏）
+document.addEventListener('DOMContentLoaded',function(){
+setTimeout(function(){CookieManager.showBanner();},1000);
+});
 // ===== XSS 防护工具函数 =====
 function escapeHtml(str){
 if(!str)return '';
@@ -142,6 +200,264 @@ if(!document.querySelector('link[href*="fonts.googleapis.com"]')){
 }
 console.log('%c⚡ 性能优化已启动（图片懒加载+字体优化）','color:#22c55e;font-size:12px');
 }
+// ===== 搜索结果页优化 =====
+var SearchOptimizer={
+searchHistory:JSON.parse(localStorage.getItem('search_history')||'[]'),
+searchStartTime:0,
+init:function(){
+var self=this;
+// 监听搜索按钮点击
+document.addEventListener('click',function(e){
+var searchBtn=e.target.closest('.hero-search-btn, [onclick*="searchTools"]');
+if(searchBtn){
+self.searchStartTime=Date.now();
+var input=document.getElementById('searchInput');
+if(input&&input.value.trim()){
+self.addToHistory(input.value.trim());
+}
+setTimeout(function(){self.showSearchStats();},500);
+}
+});
+// 监听搜索框回车
+var searchInput=document.getElementById('searchInput');
+if(searchInput){
+searchInput.addEventListener('keydown',function(e){
+if(e.key==='Enter'&&this.value.trim()){
+self.searchStartTime=Date.now();
+self.addToHistory(this.value.trim());
+setTimeout(function(){self.showSearchStats();},500);
+}
+});
+}
+},
+addToHistory:function(query){
+// 去重，最多保存10条
+this.searchHistory=this.searchHistory.filter(function(q){return q!==query;});
+this.searchHistory.unshift(query);
+if(this.searchHistory.length>10)this.searchHistory=this.searchHistory.slice(0,10);
+localStorage.setItem('search_history',JSON.stringify(this.searchHistory));
+},
+showSearchStats:function(){
+// 移除旧的统计
+var oldStats=document.getElementById('searchStats');
+if(oldStats)oldStats.remove();
+var input=document.getElementById('searchInput');
+var query=input?input.value.trim():'';
+if(!query)return;
+// 计算搜索结果数量
+var toolsGrid=document.getElementById('toolsGrid');
+var resultCount=toolsGrid?toolsGrid.querySelectorAll('.tool-card').length:0;
+var elapsed=((Date.now()-this.searchStartTime)/1000).toFixed(2);
+// 创建统计栏
+var statsBar=document.createElement('div');
+statsBar.id='searchStats';
+statsBar.style.cssText='background:var(--bg-secondary,#f5f5f5);border-radius:10px;padding:12px 16px;margin-bottom:15px;display:flex;align-items:center;gap:15px;flex-wrap:wrap;font-size:.85rem;';
+var suggestions=this.getSuggestions(query);
+var suggHtml=suggestions.length>0?'<span style="color:var(--text-secondary,#666);">你是不是想找：</span>'+suggestions.map(function(s){return '<a href="#" onclick="return quickSearch(\''+s.replace(/'/g,"\\'")+'\'),!1" style="color:#667eea;text-decoration:none;margin:0 5px;">'+s+'</a>';}).join(''):'';
+var historyHtml=this.searchHistory.length>0?'<details style="margin-left:auto;"><summary style="cursor:pointer;color:var(--text-secondary,#666);">搜索历史</summary><div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:5px;">'+this.searchHistory.map(function(h){return '<a href="#" onclick="return quickSearch(\''+h.replace(/'/g,"\\'")+'\'),!1" style="padding:4px 10px;background:var(--bg-primary,#fff);border-radius:15px;text-decoration:none;color:var(--text-primary,#333);font-size:.8rem;border:1px solid var(--border-color,#ddd);">'+h+'</a>';}).join('')+'</div></details>':'';
+statsBar.innerHTML='<span>🔍 找到 <strong style="color:#667eea;">'+resultCount+'</strong> 个相关工具</span><span style="color:var(--text-secondary,#666);">用时 '+elapsed+' 秒</span>'+suggHtml+historyHtml;
+// 插入到工具列表前面
+var toolsSection=document.getElementById('toolsSection');
+if(toolsSection){
+var filterBar=toolsSection.querySelector('.filter-bar');
+if(filterBar){
+filterBar.parentNode.insertBefore(statsBar,filterBar.nextSibling);
+}else{
+toolsSection.insertBefore(statsBar,toolsSection.firstChild);
+}
+}
+// 空状态优化
+if(resultCount===0){
+var noResults=document.getElementById('noResults');
+if(noResults){
+noResults.style.display='block';
+noResults.innerHTML='<div class="no-results-icon">🔍</div><h3>没有找到匹配"'+escapeHtml(query)+'"的工具</h3><p>试试其他关键词，或 <a href="#" onclick="return clearFilters(),!1">清除筛选条件</a></p><div style="margin-top:20px;"><h4 style="margin-bottom:10px;">🔥 热门搜索</h4><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;"><a href="#" onclick="return quickSearch(\'ChatGPT\'),!1" style="padding:6px 14px;background:var(--bg-secondary,#f5f5f5);border-radius:20px;text-decoration:none;color:var(--text-primary,#333);font-size:.85rem;">ChatGPT</a><a href="#" onclick="return quickSearch(\'Midjourney\'),!1" style="padding:6px 14px;background:var(--bg-secondary,#f5f5f5);border-radius:20px;text-decoration:none;color:var(--text-primary,#333);font-size:.85rem;">Midjourney</a><a href="#" onclick="return quickSearch(\'AI绘画\'),!1" style="padding:6px 14px;background:var(--bg-secondary,#f5f5f5);border-radius:20px;text-decoration:none;color:var(--text-primary,#333);font-size:.85rem;">AI绘画</a><a href="#" onclick="return quickSearch(\'免费\'),!1" style="padding:6px 14px;background:var(--bg-secondary,#f5f5f5);border-radius:20px;text-decoration:none;color:var(--text-primary,#333);font-size:.85rem;">免费工具</a></div></div></div>';
+}
+}
+},
+getSuggestions:function(query){
+// 简单的搜索建议（基于常见工具名）
+var allTools=['ChatGPT','Claude','Gemini','Midjourney','DALL-E 3','Stable Diffusion','Jasper','Copy.ai','Writesonic','Runway','Pika','Sora','GitHub Copilot','Cursor','Suno','ElevenLabs','Notion AI','Grammarly','Canva','Leonardo AI'];
+var lower=query.toLowerCase();
+return allTools.filter(function(t){
+return t.toLowerCase().indexOf(lower)>=0||lower.indexOf(t.toLowerCase())>=0;
+}).slice(0,4);
+}
+};
+SearchOptimizer.init();
+// ===== 工具详情页信息分层 =====
+function initDetailLayering(){
+var detailObserver=new MutationObserver(function(){
+var detailView=document.getElementById('detailView');
+if(!detailView||detailView.style.display==='none')return;
+var detailContent=document.getElementById('detailContent');
+if(!detailContent)return;
+// 检查是否已经分层
+if(detailContent.querySelector('.detail-quick-card'))return;
+// 等待内容加载完成
+setTimeout(function(){
+var titleEl=detailContent.querySelector('h1, h2, .detail-title');
+if(!titleEl)return;
+var toolName=titleEl.textContent.trim();
+// 提取评分
+var ratingEl=detailContent.querySelector('.rating, .score, [class*="rating"], [class*="score"]');
+var ratingText=ratingEl?ratingEl.textContent.trim():'暂无评分';
+// 提取价格
+var priceEl=detailContent.querySelector('.price, [class*="price"]');
+var priceText=priceEl?priceEl.textContent.trim():'价格见官网';
+// 提取描述（第一个p标签）
+var descEl=detailContent.querySelector('p');
+var descText=descEl?descEl.textContent.trim().slice(0,150):'';
+// 创建快速信息卡
+var quickCard=document.createElement('div');
+quickCard.className='detail-quick-card';
+quickCard.style.cssText='background:linear-gradient(135deg,rgba(102,126,234,.08),rgba(118,75,162,.08));border:1px solid rgba(102,126,234,.2);border-radius:16px;padding:25px;margin-bottom:25px;';
+quickCard.innerHTML='<div style="display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap;">'+
+'<div style="flex:1;min-width:200px;">'+
+'<h1 style="margin:0 0 8px;font-size:1.8rem;">'+escapeHtml(toolName)+'</h1>'+
+'<p style="margin:0 0 12px;color:var(--text-secondary,#666);font-size:.95rem;line-height:1.6;">'+escapeHtml(descText)+(descText.length>=150?'...':'')+'</p>'+
+'<div style="display:flex;gap:15px;flex-wrap:wrap;font-size:.85rem;">'+
+'<span style="display:inline-flex;align-items:center;gap:5px;"><span style="color:#f59e0b;">⭐</span> '+escapeHtml(ratingText)+'</span>'+
+'<span style="display:inline-flex;align-items:center;gap:5px;"><span style="color:#22c55e;">💰</span> '+escapeHtml(priceText)+'</span>'+
+'</div></div>'+
+'<div style="display:flex;flex-direction:column;gap:10px;min-width:150px;">'+
+'<a href="#" onclick="return false" class="detail-cta-primary" style="padding:12px 24px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;text-decoration:none;border-radius:10px;font-weight:600;text-align:center;box-shadow:0 4px 12px rgba(102,126,234,.3);transition:all .2s;">🚀 立即访问官网</a>'+
+'<button class="detail-cta-secondary" onclick="var t=this.textContent;if(t.indexOf(\'收藏\')>=0){this.textContent=\'✅ 已收藏\';this.style.background=\'#22c55e\';}else{this.textContent=\'⭐ 收藏工具\';this.style.background=\'\';}" style="padding:10px 24px;background:var(--bg-secondary,#f5f5f5);color:var(--text-primary,#333);border:1px solid var(--border-color,#ddd);border-radius:10px;cursor:pointer;font-weight:500;">⭐ 收藏工具</button>'+
+'<button onclick="if(typeof toggleCompareMode===\'function\')toggleCompareMode();" style="padding:10px 24px;background:var(--bg-secondary,#f5f5f5);color:var(--text-primary,#333);border:1px solid var(--border-color,#ddd);border-radius:10px;cursor:pointer;font-weight:500;">⚖️ 加入对比</button>'+
+'</div></div>';
+// 插入到详情内容最前面
+detailContent.insertBefore(quickCard,detailContent.firstChild);
+// 给CTA按钮添加悬停效果
+var ctaPrimary=quickCard.querySelector('.detail-cta-primary');
+if(ctaPrimary){
+ctaPrimary.addEventListener('mouseenter',function(){this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(102,126,234,.4)';});
+ctaPrimary.addEventListener('mouseleave',function(){this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(102,126,234,.3)';});
+}
+// 把原来的标题和描述隐藏（因为已经在快速信息卡中显示了）
+if(titleEl)titleEl.style.display='none';
+if(descEl)descEl.style.display='none';
+console.log('%c📐 详情页信息分层已应用','color:#3b82f6;font-size:12px');
+},300);
+});
+var dv=document.getElementById('detailView');
+if(dv)detailObserver.observe(dv,{attributes:true,attributeFilter:['style'],childList:true,subtree:true});
+}
+// ===== 协同过滤推荐系统（Item-CF）=====
+// ===== 协同过滤推荐系统（Item-CF）=====
+var CollaborativeFilter={
+userId:localStorage.getItem('cf_user_id')||('user_'+Math.random().toString(36).substr(2,9)),
+interactions:JSON.parse(localStorage.getItem('cf_interactions')||'{}'),
+// 记录用户与工具的交互
+recordInteraction:function(toolName,interactionType){
+if(!toolName)return;
+// 生成匿名用户ID（如果没有）
+if(!localStorage.getItem('cf_user_id')){
+localStorage.setItem('cf_user_id',this.userId);
+}
+// 记录交互
+if(!this.interactions[toolName]){
+this.interactions[toolName]={users:{},total:0};
+}
+if(!this.interactions[toolName].users[this.userId]){
+this.interactions[toolName].users[this.userId]={};
+}
+this.interactions[toolName].users[this.userId][interactionType]=Date.now();
+this.interactions[toolName].total++;
+// 只保留最近100个工具的交互数据（防止localStorage溢出）
+var tools=Object.keys(this.interactions);
+if(tools.length>100){
+// 按total排序，删除最少交互的
+tools.sort(function(a,b){return this.interactions[a].total-this.interactions[b].total;}.bind(this));
+for(var i=0;i<tools.length-100;i++){
+delete this.interactions[tools[i]];
+}
+}
+localStorage.setItem('cf_interactions',JSON.stringify(this.interactions));
+},
+// 计算两个工具之间的相似度（基于共同用户数）
+calculateSimilarity:function(toolA,toolB){
+if(!this.interactions[toolA]||!this.interactions[toolB])return 0;
+var usersA=Object.keys(this.interactions[toolA].users);
+var usersB=Object.keys(this.interactions[toolB].users);
+var commonUsers=usersA.filter(function(u){return usersB.indexOf(u)>=0;});
+// Jaccard相似度：共同用户数 / 并集用户数
+var unionUsers=new Set(usersA.concat(usersB)).size;
+return unionUsers>0?commonUsers.length/unionUsers:0;
+},
+// 获取与指定工具最相似的工具列表
+getSimilarTools:function(toolName,count){
+var self=this;
+var tools=Object.keys(this.interactions).filter(function(t){return t!==toolName;});
+var similarities=tools.map(function(t){
+return {
+name:t,
+similarity:self.calculateSimilarity(toolName,t),
+commonUsers:self.getCommonUsers(toolName,t)
+};
+});
+similarities.sort(function(a,b){return b.similarity-a.similarity;});
+return similarities.slice(0,count||5);
+},
+// 获取两个工具的共同用户数
+getCommonUsers:function(toolA,toolB){
+if(!this.interactions[toolA]||!this.interactions[toolB])return 0;
+var usersA=Object.keys(this.interactions[toolA].users);
+var usersB=Object.keys(this.interactions[toolB].users);
+return usersA.filter(function(u){return usersB.indexOf(u)>=0;}).length;
+},
+// 在工具详情页显示"浏览了这个工具的用户还浏览了..."
+showCollaborativeRecommendations:function(toolName){
+// 移除旧的推荐
+var oldRec=document.getElementById('cfRecommendations');
+if(oldRec)oldRec.remove();
+// 获取协同过滤推荐
+var recs=this.getSimilarTools(toolName,5);
+// 如果没有足够的推荐数据，不显示
+if(recs.length<2||recs[0].similarity===0)return;
+var detailContent=document.getElementById('detailContent');
+if(!detailContent)return;
+// 创建推荐区域
+var recSection=document.createElement('div');
+recSection.id='cfRecommendations';
+recSection.style.cssText='margin-top:25px;padding-top:20px;border-top:1px solid var(--border-color,#ddd);';
+var html='<h3 style="margin-bottom:15px;font-size:1.1rem;">👥 浏览了这个工具的用户还浏览了</h3>';
+html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;">';
+recs.forEach(function(rec){
+var percent=Math.round(rec.similarity*100);
+html+='<a href="#" onclick="return quickSearch(\''+rec.name.replace(/'/g,"\\'")+'\'),!1" style="padding:12px 15px;background:var(--bg-secondary,#f5f5f5);border-radius:10px;text-decoration:none;color:var(--text-primary,#333);border:1px solid var(--border-color,#ddd);transition:all .2s;display:block;">'+
+'<div style="font-weight:600;margin-bottom:5px;font-size:.9rem;">'+escapeHtml(rec.name)+'</div>'+
+'<div style="font-size:.75rem;color:var(--text-secondary,#666);">'+rec.commonUsers+' 人共同浏览 · 匹配度 '+percent+'%</div></a>';
+});
+html+='</div>';
+html+='<p style="margin-top:10px;font-size:.75rem;color:var(--text-secondary,#666);">💡 基于用户行为的协同过滤推荐，数据来自本地存储</p>';
+recSection.innerHTML=html;
+// 插入到基于内容的推荐之前（如果有）
+var contentRec=document.getElementById('recommendationSection');
+if(contentRec){
+detailContent.insertBefore(recSection,contentRec);
+}else{
+detailContent.appendChild(recSection);
+}
+console.log('%c👥 协同过滤推荐已显示（'+recs.length+'个）','color:#a855f7;font-size:12px');
+}
+};
+// 监听工具浏览，记录交互数据
+document.addEventListener('click',function(e){
+var card=e.target.closest('.tool-card, .hot-card, .similar-card');
+if(card){
+var nameEl=card.querySelector('.tool-card-name, .hot-card-name, h3, h4');
+var name=nameEl?nameEl.textContent.trim():'';
+if(name){
+CollaborativeFilter.recordInteraction(name,'view');
+// 延迟显示协同过滤推荐
+setTimeout(function(){CollaborativeFilter.showCollaborativeRecommendations(name);},800);
+}
+}
+var favBtn=e.target.closest('.favorite-btn, [data-favorite]');
+if(favBtn){
+// 从最近浏览中获取工具名（简化处理）
+}
+});
 // ===== 联盟营销配置（替换为你的真实联盟链接）=====
 var AFFILIATE_LINKS={
 'ChatGPT':'https://chat.openai.com',
@@ -1276,6 +1592,328 @@ content:`
 <p>建议先使用免费版试用，找到最适合你的工具后再考虑付费。记住，AI是辅助工具，你的创造力和思考才是核心。</p>
 <p>想了解更多AI工具？访问 <a href="https://qxgjz.github.io/ai-tools-radar/">AI Tools Radar</a>，发现更多好用的AI工具！</p>
 `
+},
+'best-ai-image-tools-2026':{
+title:'2026年10大最佳AI绘画工具对比评测',
+author:'AI Tools Radar 团队',
+date:'2026-08-29',
+readTime:'10分钟',
+category:'图像',
+content:`
+<h2>引言</h2>
+<p>AI绘画工具正在彻底改变视觉创作的方式。无论是专业设计师、插画师，还是没有任何绘画基础的普通人，都能用AI生成令人惊叹的图像。从概念艺术到产品设计，从社交媒体配图到游戏素材，AI绘画工具的应用场景越来越广泛。</p>
+<p>2026年，AI绘画工具市场已经非常成熟，有数十款产品可供选择。但哪款生成质量最好？哪款性价比最高？哪款最适合新手？哪款支持中文提示词？</p>
+<p>本文深度对比评测了10款主流AI绘画工具，从生成质量、功能丰富度、易用性、价格、社区生态等多个维度进行分析，帮你做出最明智的选择。</p>
+<h2>评测标准</h2>
+<p>我们从以下6个维度对每款工具进行评分（满分10分）：</p>
+<ul>
+<li><strong>生成质量</strong>：图像清晰度、细节丰富度、艺术感、提示词理解准确度</li>
+<li><strong>功能丰富度</strong>：支持的风格、图像编辑功能、高级功能（inpainting、outpainting、ControlNet等）</li>
+<li><strong>易用性</strong>：界面设计、上手难度、提示词友好度、中文支持</li>
+<li><strong>价格</strong>：免费额度、付费方案、性价比、生成速度</li>
+<li><strong>社区生态</strong>：用户数量、作品分享、模型数量、教程资源</li>
+<li><strong>商用授权</strong>：生成图像的商用权限、版权归属、使用限制</li>
+</ul>
+<h2>10款AI绘画工具详细评测</h2>
+<h3>1. Midjourney（综合最佳）</h3>
+<p><strong>评分：9.6/10</strong></p>
+<p>Midjourney是目前最流行的AI绘画工具，以其卓越的艺术感和生成质量著称。它通过Discord使用，输入提示词即可生成高质量图像。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>生成质量最高，艺术感最强，细节丰富</li>
+<li>提示词理解准确，能生成复杂场景</li>
+<li>社区活跃，每天有大量优秀作品分享</li>
+<li>持续快速迭代，V6版本质量大幅提升</li>
+<li>支持图像编辑（inpainting、outpainting、variations）</li>
+<li>支持风格参考、角色一致性</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>只能通过Discord使用，没有独立网页界面</li>
+<li>没有免费额度，最低$10/月</li>
+<li>中文提示词支持一般，建议用英文</li>
+<li>学习曲线较陡，需要掌握提示词技巧</li>
+<li>生成速度较慢（高质量图像需要1-2分钟）</li>
+<li>商用授权有限制（Basic计划不能商用）</li>
+</ul>
+<p><strong>价格：</strong>Basic $10/月（200分钟快速生成）；Standard $30/月（15小时快速生成+无限放松模式）；Pro $60/月（30小时快速生成+无限放松模式+隐身模式）</p>
+<p><strong>适合人群：</strong>专业设计师、插画师、概念艺术家、追求最高质量的用户</p>
+<h3>2. DALL-E 3（最易用）</h3>
+<p><strong>评分：9.0/10</strong></p>
+<p>DALL-E 3是OpenAI开发的AI绘画工具，集成在ChatGPT中，以其出色的提示词理解和易用性著称。不需要学习复杂的提示词，用自然语言描述就能生成高质量图像。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>提示词理解最准确，自然语言描述就能生成好图</li>
+<li>集成在ChatGPT中，使用方便</li>
+<li>文字渲染能力强（能在图像中生成准确的文字）</li>
+<li>中文支持好（ChatGPT Plus支持中文提示词）</li>
+<li>有免费额度（ChatGPT免费版每天可生成少量图像）</li>
+<li>生成速度快（通常30秒内）</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>艺术感不如Midjourney，图像偏"干净"但缺少灵魂</li>
+<li>编辑功能有限（只有inpainting，没有outpainting）</li>
+<li>风格多样性不如Midjourney和Stable Diffusion</li>
+<li>ChatGPT Plus需要$20/月</li>
+<li>分辨率较低（默认1024x1024，最高1792x1024）</li>
+<li>商用授权有争议（OpenAI声称用户拥有版权，但有法律风险）</li>
+</ul>
+<p><strong>价格：</strong>ChatGPT免费版（有限额度）；ChatGPT Plus $20/月（更多额度+优先访问）；ChatGPT Team $25/用户/月</p>
+<p><strong>适合人群：</strong>新手、非专业用户、需要快速生成图像的营销人员、内容创作者</p>
+<h3>3. Stable Diffusion（最自由）</h3>
+<p><strong>评分：8.8/10</strong></p>
+<p>Stable Diffusion是 Stability AI 开发的开源AI绘画模型，是最自由、最可定制的AI绘画工具。可以本地运行，也可以通过网页界面使用，支持数千种自定义模型和插件。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>开源免费，可以本地运行（需要GPU）</li>
+<li>最自由，完全控制生成过程</li>
+<li>模型生态最丰富（Civitai上有数千种自定义模型）</li>
+<li>插件生态强大（ControlNet、LoRA、DreamBooth等）</li>
+<li>支持最高分辨率（可以生成4K甚至8K图像）</li>
+<li>商用授权清晰（生成图像完全归用户所有）</li>
+<li>社区活跃，教程资源丰富</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>学习曲线最陡，需要掌握大量技术知识</li>
+<li>本地运行需要高性能GPU（至少8GB显存）</li>
+<li>界面不够友好（需要用WebUI或ComfyUI）</li>
+<li>生成质量取决于模型和参数设置，新手可能生成质量差</li>
+<li>生成速度较慢（本地运行取决于硬件）</li>
+<li>需要自己管理模型和插件，维护成本高</li>
+</ul>
+<p><strong>价格：</strong>开源免费（本地运行）；网页版（如RunDiffusion、DreamStudio）按使用量付费，约$0.01-0.05/张</p>
+<p><strong>适合人群：</strong>技术爱好者、专业艺术家、需要完全控制生成过程的用户、有GPU硬件的用户</p>
+<h3>4. Leonardo AI（游戏美术最佳）</h3>
+<p><strong>评分：8.5/10</strong></p>
+<p>Leonardo AI是专为游戏美术和概念艺术设计的AI绘画工具，以其高质量的游戏风格生成和强大的编辑功能著称。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>游戏美术质量最高，适合概念艺术、角色设计、场景设计</li>
+<li>强大的编辑功能（inpainting、outpainting、背景移除、图像放大）</li>
+<li>支持ControlNet（姿态控制、深度控制、边缘控制）</li>
+<li>支持训练自定义模型（DreamBooth）</li>
+<li>有免费额度（每天150个token）</li>
+<li>界面友好，上手简单</li>
+<li>生成速度快</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>通用艺术感不如Midjourney</li>
+<li>免费额度有限（150 token/天，约生成30张图）</li>
+<li>付费方案较贵（Apprentice $12/月，Artisan $30/月）</li>
+<li>中文支持一般</li>
+<li>社区不如Midjourney和Stable Diffusion活跃</li>
+<li>风格偏游戏化，不适合所有场景</li>
+</ul>
+<p><strong>价格：</strong>免费版（150 token/天）；Apprentice $12/月（8500 token/月）；Artisan $30/月（25000 token/月）；Maestro $60/月（60000 token/月）</p>
+<p><strong>适合人群：</strong>游戏开发者、概念艺术家、角色设计师、场景设计师</p>
+<h3>5. Canva AI（设计最佳）</h3>
+<p><strong>评分：8.2/10</strong></p>
+<p>Canva AI是Canva集成的AI绘画功能，适合不需要专业绘画工具，只需要快速生成设计素材的用户。Canva本身是最流行的在线设计工具，AI绘画功能让设计更高效。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>集成在Canva中，生成图像后可以直接编辑</li>
+<li>界面最友好，零学习成本</li>
+<li>支持文字渲染（生成带文字的设计图）</li>
+<li>有大量模板和设计元素，可以快速组合</li>
+<li>中文支持好</li>
+<li>适合社交媒体配图、海报、演示文稿等设计场景</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>生成质量不如专业AI绘画工具</li>
+<li>艺术感和细节不如Midjourney</li>
+<li>编辑功能有限</li>
+<li>Canva Pro需要$12.99/月</li>
+<li>不适合专业艺术创作</li>
+<li>风格多样性有限</li>
+</ul>
+<p><strong>价格：</strong>Canva免费版（有限AI生成额度）；Canva Pro $12.99/月（更多AI额度+高级功能）；Canva Teams $14.99/用户/月</p>
+<p><strong>适合人群：</strong>营销人员、社交媒体运营、小企业主、非专业设计师</p>
+<h3>6. Adobe Firefly（商用最安全）</h3>
+<p><strong>评分：8.0/10</strong></p>
+<p>Adobe Firefly是Adobe开发的AI绘画工具，最大的优势是商用授权安全——训练数据来自Adobe Stock和公共领域内容，生成图像可以安全商用。集成在Photoshop、Illustrator等Adobe软件中。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>商用授权最安全（训练数据合法，无版权风险）</li>
+<li>集成在Adobe Creative Cloud中（Photoshop、Illustrator、Express）</li>
+<li>与Photoshop的生成式填充配合使用，工作流顺畅</li>
+<li>支持文字效果生成（生成艺术字）</li>
+<li>支持矢量图形生成（Illustrator中）</li>
+<li>Adobe用户上手简单</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>生成质量不如Midjourney和DALL-E 3</li>
+<li>艺术感和创意性一般</li>
+<li>需要Adobe Creative Cloud订阅（$54.99/月）</li>
+<li>免费额度有限（每月25个生成积分）</li>
+<li>功能相对简单，高级功能少</li>
+<li>中文支持一般</li>
+</ul>
+<p><strong>价格：</strong>免费版（25积分/月）；Premium $4.99/月（500积分/月）；Adobe Creative Cloud $54.99/月（包含Firefly+所有Adobe软件）</p>
+<p><strong>适合人群：</strong>专业设计师、Adobe用户、需要安全商用授权的企业用户</p>
+<h3>7. Ideogram（文字渲染最佳）</h3>
+<p><strong>评分：7.8/10</strong></p>
+<p>Ideogram是一款专注于文字渲染的AI绘画工具，最大的优势是能在图像中生成准确、美观的文字。适合生成海报、Logo、社交媒体配图等需要文字的图像。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>文字渲染能力最强（能生成准确的英文和中文文字）</li>
+<li>适合生成海报、Logo、社交媒体配图</li>
+<li>有免费额度（每天有限生成次数）</li>
+<li>界面简洁，上手简单</li>
+<li>支持多种风格</li>
+<li>生成速度快</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>通用图像质量不如Midjourney和DALL-E 3</li>
+<li>编辑功能有限</li>
+<li>免费额度有限</li>
+<li>付费方案较贵（Plus $20/月）</li>
+<li>社区不如主流工具活跃</li>
+<li>不适合复杂场景生成</li>
+</ul>
+<p><strong>价格：</strong>免费版（有限额度）；Plus $20/月（无限生成+优先访问）；Pro $60/月（团队功能+更多额度）</p>
+<p><strong>适合人群：</strong>需要生成带文字图像的用户、营销人员、社交媒体运营</p>
+<h3>8. Recraft（矢量图最佳）</h3>
+<p><strong>评分：7.5/10</strong></p>
+<p>Recraft是一款专注于矢量图形和图标生成的AI绘画工具，适合生成Logo、图标、插画等矢量图形。最大的优势是可以导出SVG格式，无限缩放不失真。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>矢量图形生成质量高（可以导出SVG）</li>
+<li>适合生成Logo、图标、插画</li>
+<li>支持风格一致性（生成系列图标）</li>
+<li>有免费额度</li>
+<li>界面友好</li>
+<li>支持图像编辑（inpainting、颜色调整）</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>不适合生成照片级真实图像</li>
+<li>功能相对单一</li>
+<li>免费额度有限</li>
+<li>付费方案较贵（Pro $20/月）</li>
+<li>社区不如主流工具活跃</li>
+<li>中文支持一般</li>
+</ul>
+<p><strong>价格：</strong>免费版（有限额度）；Pro $20/月（无限生成+SVG导出+商业授权）；Team $30/用户/月</p>
+<p><strong>适合人群：</strong>UI设计师、图标设计师、需要矢量图形的用户</p>
+<h3>9. SeaArt（中文最佳）</h3>
+<p><strong>评分：7.2/10</strong></p>
+<p>SeaArt是国内开发的AI绘画平台，基于Stable Diffusion，最大的优势是中文支持好、国内访问速度快、有大量中文模型和教程。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>中文支持最好（界面、提示词、教程都是中文）</li>
+<li>国内访问速度快，不需要翻墙</li>
+<li>基于Stable Diffusion，模型丰富</li>
+<li>有免费额度（每天免费生成次数）</li>
+<li>社区活跃，有大量中文作品和教程</li>
+<li>支持ControlNet、LoRA等高级功能</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>生成质量取决于模型，不如Midjourney稳定</li>
+<li>界面和体验不如国外主流工具精致</li>
+<li>免费额度有限，高质量生成需要付费</li>
+<li>商用授权需要注意（部分模型有使用限制）</li>
+<li>功能更新速度不如国外工具</li>
+<li>国际用户少，社区偏国内</li>
+</ul>
+<p><strong>价格：</strong>免费版（每天有限免费次数）；会员 ¥30/月（更多额度+优先队列）；高级会员 ¥68/月（无限生成+所有功能）</p>
+<p><strong>适合人群：</strong>国内用户、中文用户、Stable Diffusion初学者、不想翻墙的用户</p>
+<h3>10. Getimg.ai（性价比最佳）</h3>
+<p><strong>评分：7.0/10</strong></p>
+<p>Getimg.ai是一款性价比很高的AI绘画工具，基于Stable Diffusion，功能全面，价格实惠，适合预算有限的用户。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>价格实惠（Basic $12/月，无限生成）</li>
+<li>功能全面（文本生成、图像编辑、inpainting、outpainting、放大）</li>
+<li>支持ControlNet</li>
+<li>有免费额度（每月100张）</li>
+<li>生成速度快</li>
+<li>界面简洁</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>生成质量一般，不如Midjourney和DALL-E 3</li>
+<li>模型数量不如Civitai丰富</li>
+<li>社区不活跃</li>
+<li>中文支持一般</li>
+<li>高级功能有限</li>
+<li>商用授权需要注意</li>
+</ul>
+<p><strong>价格：</strong>免费版（100张/月）；Basic $12/月（无限生成+优先队列）；Pro $24/月（无限生成+ControlNet+API访问）；Ultra $40/月（所有功能+最高优先级）</p>
+<p><strong>适合人群：</strong>预算有限的用户、Stable Diffusion初学者、需要大量生成的用户</p>
+<h2>对比表格</h2>
+<table>
+<tr><th>工具</th><th>生成质量</th><th>功能丰富度</th><th>易用性</th><th>价格</th><th>社区生态</th><th>商用授权</th><th>总分</th></tr>
+<tr><td>Midjourney</td><td>10</td><td>9</td><td>7</td><td>7</td><td>10</td><td>7</td><td><strong>9.6</strong></td></tr>
+<tr><td>DALL-E 3</td><td>9</td><td>7</td><td>10</td><td>8</td><td>8</td><td>8</td><td><strong>9.0</strong></td></tr>
+<tr><td>Stable Diffusion</td><td>9</td><td>10</td><td>5</td><td>10</td><td>10</td><td>10</td><td><strong>8.8</strong></td></tr>
+<tr><td>Leonardo AI</td><td>8.5</td><td>9</td><td>8</td><td>7</td><td>7</td><td>8</td><td><strong>8.5</strong></td></tr>
+<tr><td>Canva AI</td><td>7.5</td><td>7</td><td>10</td><td>8</td><td>8</td><td>8</td><td><strong>8.2</strong></td></tr>
+<tr><td>Adobe Firefly</td><td>7.5</td><td>7</td><td>8</td><td>6</td><td>7</td><td>10</td><td><strong>8.0</strong></td></tr>
+<tr><td>Ideogram</td><td>7.5</td><td>6</td><td>9</td><td>7</td><td>6</td><td>7</td><td><strong>7.8</strong></td></tr>
+<tr><td>Recraft</td><td>7</td><td>6</td><td>8</td><td>7</td><td>6</td><td>8</td><td><strong>7.5</strong></td></tr>
+<tr><td>SeaArt</td><td>7</td><td>8</td><td>9</td><td>8</td><td>7</td><td>6</td><td><strong>7.2</strong></td></tr>
+<tr><td>Getimg.ai</td><td>6.5</td><td>7</td><td>8</td><td>9</td><td>5</td><td>7</td><td><strong>7.0</strong></td></tr>
+</table>
+<h2>选购建议</h2>
+<h3>按需求选择</h3>
+<ul>
+<li><strong>追求最高质量</strong>：Midjourney（艺术感最强，质量最高）</li>
+<li><strong>新手/易用性</strong>：DALL-E 3（自然语言描述，零学习成本）</li>
+<li><strong>完全自由/技术控</strong>：Stable Diffusion（开源免费，完全控制）</li>
+<li><strong>游戏美术</strong>：Leonardo AI（游戏风格质量最高）</li>
+<li><strong>设计素材</strong>：Canva AI（生成+设计一体化）</li>
+<li><strong>安全商用</strong>：Adobe Firefly（商用授权最安全）</li>
+<li><strong>带文字的图像</strong>：Ideogram（文字渲染最准确）</li>
+<li><strong>矢量图/图标</strong>：Recraft（SVG导出，无限缩放）</li>
+<li><strong>国内用户</strong>：SeaArt（中文支持好，访问快）</li>
+<li><strong>预算有限</strong>：Getimg.ai（$12/月无限生成）</li>
+</ul>
+<h3>按预算选择</h3>
+<ul>
+<li><strong>$0预算</strong>：DALL-E 3（ChatGPT免费版有限额度）+ Stable Diffusion（本地运行，需要GPU）+ SeaArt（每天免费次数）</li>
+<li><strong>$10-20/月预算</strong>：Midjourney Basic $10/月 或 DALL-E 3（ChatGPT Plus $20/月）</li>
+<li><strong>$20-50/月预算</strong>：Midjourney Standard $30/月 + Canva Pro $12.99/月</li>
+<li><strong>$50+/月预算</strong>：Midjourney Pro $60/月 + Adobe Creative Cloud $54.99/月（专业工作流）</li>
+</ul>
+<h2>常见问题 FAQ</h2>
+<h3>Q: AI绘画工具生成的图像有版权吗？</h3>
+<p>A: 这是一个复杂的法律问题。一般来说：
+- Midjourney：付费用户拥有生成图像的使用权，但版权归属有争议
+- DALL-E 3：OpenAI声称用户拥有版权，但有法律风险
+- Stable Diffusion：生成图像完全归用户所有（开源模型）
+- Adobe Firefly：商用授权最安全（训练数据合法）
+建议重要商业用途咨询律师，并保留生成记录。</p>
+<h3>Q: 哪款AI绘画工具中文提示词支持最好？</h3>
+<p>A: DALL-E 3（ChatGPT Plus）和 SeaArt 的中文支持最好。Midjourney建议用英文提示词，质量更高。Stable Diffusion可以安装中文模型，但效果不如英文。</p>
+<h3>Q: AI绘画工具能代替专业画师吗？</h3>
+<p>A: 不能完全代替。AI绘画工具是辅助工具，能提升效率，但专业的审美、创意、构图、细节处理仍然需要人类。最好的方式是AI生成初稿，人类画师编辑优化。</p>
+<h3>Q: 免费AI绘画工具有哪些？</h3>
+<p>A: 完全免费的有：Stable Diffusion（本地运行）、Bing Image Creator（基于DALL-E 3，每天有限额度）、SeaArt（每天免费次数）、Getimg.ai（每月100张免费）、Leonardo AI（每天150 token免费）。</p>
+<h3>Q: AI绘画工具生成的图像可以商用吗？</h3>
+<p>A: 取决于工具和计划：
+- Midjourney：Standard及以上计划可以商用，Basic计划不能
+- DALL-E 3：可以商用（但有法律风险）
+- Stable Diffusion：可以商用（完全归用户所有）
+- Adobe Firefly：可以商用（最安全）
+- Leonardo AI：付费计划可以商用
+建议仔细阅读各工具的服务条款。</p>
+<h2>结论</h2>
+<p>2026年，AI绘画工具已经非常成熟，选择哪款取决于你的具体需求和预算。</p>
+<p><strong>综合最佳：Midjourney</strong> — 生成质量最高，艺术感最强，社区最活跃，适合追求最高质量的专业用户。</p>
+<p><strong>最易用：DALL-E 3</strong> — 提示词理解最准确，自然语言描述就能生成好图，适合新手和非专业用户。</p>
+<p><strong>最自由：Stable Diffusion</strong> — 开源免费，完全控制，模型生态最丰富，适合技术爱好者和专业艺术家。</p>
+<p><strong>游戏美术最佳：Leonardo AI</strong> — 游戏风格质量最高，编辑功能强大，适合游戏开发者和概念艺术家。</p>
+<p><strong>安全商用：Adobe Firefly</strong> — 商用授权最安全，集成在Adobe Creative Cloud中，适合企业用户和专业设计师。</p>
+<p>建议先使用免费版试用，找到最适合你的工具后再考虑付费。记住，AI是辅助工具，你的创意和审美才是核心。</p>
+<p>想了解更多AI工具？访问 <a href="https://qxgjz.github.io/ai-tools-radar/">AI Tools Radar</a>，发现更多好用的AI工具！</p>
+`
 }
 };
 function showBlogArticle(articleId){
@@ -1559,6 +2197,7 @@ initConversionFunnel();
 addUserNavEntry();
 initPerformanceOptimization();
 initOnboardingWizard();
+initDetailLayering();
 },100);
 });
 console.log('%c🚀 AI Tools Radar 增强功能已加载','color:#667eea;font-size:14px;font-weight:bold');
