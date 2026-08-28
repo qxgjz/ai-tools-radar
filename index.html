@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tools Radar - AI工具导航</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🛰️ AI Tools Radar</h1>
+            <p class="subtitle">发现最优质的 AI 工具，提升你的工作效率</p>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索 AI 工具...">
+                <button onclick="searchTools()">搜索</button>
+            </div>
+            <div class="category-filters" id="categoryFilters">
+                <button class="filter-btn active" data-category="all">全部</button>
+                <button class="filter-btn" data-category="writing">写作</button>
+                <button class="filter-btn" data-category="image">图像</button>
+                <button class="filter-btn" data-category="video">视频</button>
+                <button class="filter-btn" data-category="code">编程</button>
+                <button class="filter-btn" data-category="audio">音频</button>
+                <button class="filter-btn" data-category="productivity">效率</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="tools-grid" id="toolsGrid">
+            <!-- 工具卡片将通过 JS 动态生成 -->
+        </div>
+        <div class="no-results" id="noResults" style="display:none;">
+            <p>😕 没有找到匹配的工具</p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 AI Tools Radar | 让 AI 工具触手可及</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
