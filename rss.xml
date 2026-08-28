@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>AI Tools Radar - AI工具导航</title>
+        <link>https://qxgjz.github.io/ai-tools-radar/</link>
+        <description>发现最优质的 AI 工具，120+ 精选工具，含详细评测、价格对比和用户评分。</description>
+        <language>zh-CN</language>
+        <lastBuildDate>Fri, 28 Aug 2026 00:00:00 GMT</lastBuildDate>
+        <atom:link href="https://qxgjz.github.io/ai-tools-radar/rss.xml" rel="self" type="application/rss+xml"/>
+        
+        <item>
+            <title>ChatGPT - OpenAI 强大对话式 AI</title>
+            <link>https://chat.openai.com</link>
+            <description>OpenAI 开发的强大对话式 AI，支持文本生成、代码编写、问题解答等多种功能。支持 GPT-4o、代码解释器、DALL·E 3、语音对话。</description>
+            <pubDate>Fri, 28 Aug 2026 00:00:00 GMT</pubDate>
+            <category>写作</category>
+        </item>
+        
+        <item>
+            <title>Midjourney - 最流行的 AI 图像生成工具</title>
+            <link>https://www.midjourney.com</link>
+            <description>最流行的 AI 图像生成工具，通过文字描述生成高质量艺术图片和设计素材。V6模型，高分辨率，风格多样。</description>
+            <pubDate>Fri, 28 Aug 2026 00:00:00 GMT</pubDate>
+            <category>图像</category>
+        </item>
+        
+        <item>
+            <title>GitHub Copilot - AI 编程助手</title>
+            <link>https://github.com/copilot</link>
+            <description>GitHub 与 OpenAI 合作的 AI 编程助手，实时代码补全，支持多种编程语言和 IDE。支持代码补全、Chat、代码解释、PR描述。</description>
+            <pubDate>Fri, 28 Aug 2026 00:00:00 GMT</pubDate>
+            <category>编程</category>
+        </item>
+        
+        <item>
+            <title>Runway - 专业 AI 视频生成和编辑工具</title>
+            <link>https://runwayml.com</link>
+            <description>专业的 AI 视频生成和编辑工具，支持文生视频、图生视频、视频风格转换等。Gen-3 Alpha，文生视频，图生视频，运动笔刷。</description>
+            <pubDate>Fri, 28 Aug 2026 00:00:00 GMT</pubDate>
+            <category>视频</category>
+        </item>
+        
+        <item>
+            <title>ElevenLabs - 最先进的 AI 语音生成平台</title>
+            <link>https://elevenlabs.io</link>
+            <description>最先进的 AI 语音生成平台，支持文本转语音、声音克隆和多语言配音。语音合成，声音克隆，多语言，API。</description>
+            <pubDate>Fri, 28 Aug 2026 00:00:00 GMT</pubDate>
+            <category>音频</category>
+        </item>
+        
+        <item>
+            <title>Perplexity - AI 搜索引擎</title>
+            <link>https://www.perplexity.ai</link>
+            <description>AI 搜索引擎，结合大语言模型和实时网络搜索，给出带引用来源的准确答案。AI搜索，引用来源，实时搜索，多模态。</description>
+            <pubDate>Fri, 28 Aug 2026 00:00:00 GMT</pubDate>
+            <category>效率</category>
+        </item>
+    </channel>
+</rss>
