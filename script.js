@@ -107,7 +107,61 @@ const tools = [
     { name: "Durable", icon: "🏗️", desc: "AI 网站构建器，30 秒内创建完整商业网站，包含文案、图片、联系表单和在线商店。", category: "productivity", tags: ["网站构建", "AI建站"], link: "https://durable.co", price: "付费 $12/月起", priceType: "paid", platforms: ["Web"], features: ["AI建站", "30秒生成", "在线商店", "CRM"] },
     { name: "Taskade", icon: "✅", desc: "AI 任务管理和协作平台，结构化列表、笔记、思维导图，支持 AI 代理自动化任务。", category: "productivity", tags: ["任务管理", "协作"], link: "https://www.taskade.com", price: "免费/付费 $8/月", priceType: "freemium", platforms: ["Web", "Desktop", "iOS", "Android"], features: ["任务管理", "思维导图", "AI代理", "实时协作"] },
     { name: "Motion", icon: "🤖", desc: "AI 项目和时间管理助手，自动规划任务和日程，智能排优先级，提升工作效率。", category: "productivity", tags: ["时间管理", "AI规划"], link: "https://www.usemotion.com", price: "付费 $19/月", priceType: "paid", platforms: ["Web", "Mac", "Windows", "iOS", "Android"], features: ["AI日程", "任务规划", "优先级", "日历集成"] },
-    { name: "Bardeen", icon: "🤖", desc: "AI 自动化工具，用自然语言创建自动化流程，自动执行网页操作、数据提取和任务。", category: "productivity", tags: ["自动化", "浏览器"], link: "https://www.bardeen.ai", price: "免费/付费 $10/月", priceType: "freemium", platforms: ["Web", "Chrome扩展"], features: ["自然语言", "网页自动化", "数据提取", "预构建流程"] }
+    { name: "Bardeen", icon: "🤖", desc: "AI 自动化工具，用自然语言创建自动化流程，自动执行网页操作、数据提取和任务。", category: "productivity", tags: ["自动化", "浏览器"], link: "https://www.bardeen.ai", price: "免费/付费 $10/月", priceType: "freemium", platforms: ["Web", "Chrome扩展"], features: ["自然语言", "网页自动化", "数据提取", "预构建流程"] },
+    { name: "Poe", icon: "💬", desc: "Quora 推出的 AI 对话平台，集成 ChatGPT、Claude、Llama 等多种模型，一个界面畅聊所有 AI。", category: "writing", tags: ["对话", "多模型"], link: "https://poe.com", price: "免费/付费 $19.99/月", priceType: "freemium", platforms: ["Web", "iOS", "Android"], features: ["多模型", "Bot创建", "对话", "社区"] },
+    { name: "Character.AI", icon: "🎭", desc: "AI 角色对话平台，可以与虚拟角色、名人、历史人物对话，也可以创建自己的 AI 角色。", category: "writing", tags: ["角色对话", "娱乐"], link: "https://character.ai", price: "免费/付费 $9.99/月", priceType: "freemium", platforms: ["Web", "iOS", "Android"], features: ["角色对话", "角色创建", "社区", "语音"] },
+    { name: "Microsoft Copilot", icon: "🪟", desc: "微软推出的 AI 助手，集成 Bing 搜索和 GPT-4，支持网页搜索、图像生成、代码编写。", category: "writing", tags: ["对话", "搜索", "微软"], link: "https://copilot.microsoft.com", price: "免费/付费 $20/月", priceType: "freemium", platforms: ["Web", "Windows", "iOS", "Android"], features: ["GPT-4", "网页搜索", "DALL·E", "微软集成"] },
+    { name: "You.com", icon: "🔎", desc: "AI 驱动的搜索引擎，结合搜索和对话，支持代码模式、写作模式，隐私友好。", category: "writing", tags: ["搜索", "对话"], link: "https://you.com", price: "免费/付费 $9.99/月", priceType: "freemium", platforms: ["Web", "iOS", "Android"], features: ["AI搜索", "代码模式", "写作模式", "隐私"] },
+    { name: "Pi", icon: "💜", desc: "Inflection AI 推出的个人 AI 助手，专注于情感支持和对话，语气友好，像朋友一样聊天。", category: "writing", tags: ["对话", "情感"], link: "https://pi.ai", price: "免费/付费 $19.99/月", priceType: "freemium", platforms: ["Web", "iOS", "Android"], features: ["情感对话", "语音", "个人助理", "友好语气"] },
+    { name: "Wordtune", icon: "📝", desc: "AI 写作助手，实时改写和润色句子，调整语气和长度，让你的写作更清晰有力。", category: "writing", tags: ["改写", "润色"], link: "https://www.wordtune.com", price: "免费/付费 $9.99/月", priceType: "freemium", platforms: ["Web", "Chrome扩展", "iOS"], features: ["句子改写", "语气调整", "长度调整", "翻译"] },
+    { name: "Linguix", icon: "🌐", desc: "AI 写作助手，检查语法、拼写和风格，支持多语言，提供写作建议和内容模板。", category: "writing", tags: ["语法检查", "多语言"], link: "https://linguix.com", price: "免费/付费 $8/月", priceType: "freemium", platforms: ["Web", "Chrome扩展", "Desktop"], features: ["语法检查", "风格建议", "多语言", "模板"] },
+    { name: "TextCortex", icon: "✍️", desc: "AI 写作平台，2000+ 集成，支持邮件、博客、营销文案，100+ 模板，25+ 语言。", category: "writing", tags: ["内容创作", "多语言"], link: "https://textcortex.com", price: "免费/付费 $8.49/月", priceType: "freemium", platforms: ["Web", "Chrome扩展"], features: ["100+模板", "25+语言", "2000+集成", "ZenoChat"] },
+    { name: "Frase", icon: "🎯", desc: "AI SEO 内容优化平台，分析竞争对手，生成内容大纲，优化文章排名，提升搜索流量。", category: "writing", tags: ["SEO", "内容优化"], link: "https://www.frase.io", price: "付费 $14.99/月起", priceType: "paid", platforms: ["Web"], features: ["竞品分析", "内容大纲", "SEO优化", "AI写作"] },
+    { name: "Surfer SEO", icon: "🌊", desc: "AI SEO 工具，基于数据驱动的内容优化，分析 SERP，生成内容策略，提升搜索排名。", category: "writing", tags: ["SEO", "内容策略"], link: "https://surferseo.com", price: "付费 $89/月起", priceType: "paid", platforms: ["Web"], features: ["SERP分析", "内容优化", "关键词研究", "大纲生成"] },
+    { name: "NovelAI", icon: "📚", desc: "AI 小说创作工具，专注于故事生成和角色塑造，支持自定义风格和世界观，隐私保护。", category: "writing", tags: ["小说", "故事创作"], link: "https://novelai.net", price: "付费 $10/月起", priceType: "paid", platforms: ["Web"], features: ["故事生成", "角色塑造", "自定义风格", "隐私保护"] },
+    { name: "Bing Image Creator", icon: "🖼️", desc: "微软 Bing 集成的 DALL·E 图像生成工具，免费使用，通过文字描述生成高质量图片。", category: "image", tags: ["图像生成", "免费", "微软"], link: "https://www.bing.com/create", price: "免费", priceType: "free", platforms: ["Web"], features: ["DALL·E 3", "免费", "高分辨率", "Bing集成"] },
+    { name: "BlueWillow", icon: "🌌", desc: "免费的 AI 图像生成工具，基于 Discord，简单易用，适合初学者，支持多种风格。", category: "image", tags: ["图像生成", "免费", "Discord"], link: "https://www.bluewillow.ai", price: "免费/付费 $5/月", priceType: "freemium", platforms: ["Discord", "Web"], features: ["免费", "多风格", "简单易用", "社区"] },
+    { name: "SeaArt", icon: "🌊", desc: "国内 AI 绘画平台，海量模型和 LoRA，支持 Stable Diffusion，中文界面，免费额度。", category: "image", tags: ["AI绘画", "国内", "免费"], link: "https://www.seaart.ai", price: "免费/付费", priceType: "freemium", platforms: ["Web"], features: ["海量模型", "LoRA", "中文界面", "免费额度"], cnAvailable: true },
+    { name: "LiblibAI", icon: "🎨", desc: "国内 AI 艺术创作平台，模型分享社区，支持在线生图和模型下载，创作者生态丰富。", category: "image", tags: ["AI绘画", "模型社区", "国内"], link: "https://www.liblib.art", price: "免费/付费", priceType: "freemium", platforms: ["Web"], features: ["模型分享", "在线生图", "创作者社区", "中文"], cnAvailable: true },
+    { name: "NightCafe", icon: "🌙", desc: "AI 艺术生成平台，支持多种模型（Stable Diffusion、DALL·E等），每日免费额度，社区活跃。", category: "image", tags: ["AI艺术", "多模型"], link: "https://creator.nightcafe.studio", price: "免费/付费", priceType: "freemium", platforms: ["Web", "iOS", "Android"], features: ["多模型", "免费额度", "社区", "打印"] },
+    { name: "Artbreeder", icon: "🧬", desc: "AI 图像混合和编辑工具，通过混合图像生成新面孔、风景和艺术，支持精细调整。", category: "image", tags: ["图像混合", "编辑"], link: "https://www.artbreeder.com", price: "免费/付费 $8.99/月", priceType: "freemium", platforms: ["Web"], features: ["图像混合", "精细调整", "角色创建", "高分辨率"] },
+    { name: "ProfilePicture.AI", icon: "👤", desc: "AI 头像生成工具，上传照片生成 100+ 种风格的专业头像，适合社交媒体和职场。", category: "image", tags: ["头像", "人像"], link: "https://www.profilepicture.ai", price: "付费 $6.99起", priceType: "paid", platforms: ["Web"], features: ["100+风格", "专业头像", "快速生成", "高分辨率"] },
+    { name: "Lensa", icon: "📱", desc: "AI 照片编辑和头像生成 App，魔法头像功能风靡全球，支持人像美化和背景编辑。", category: "image", tags: ["头像", "照片编辑"], link: "https://prisma-ai.com/lensa", price: "免费/付费 $3.99/周", priceType: "freemium", platforms: ["iOS", "Android"], features: ["魔法头像", "人像美化", "背景编辑", "滤镜"] },
+    { name: "Tensor.Art", icon: "🔷", desc: "AI 图像生成和模型分享平台，海量开源模型，支持在线生图和模型下载，社区活跃。", category: "image", tags: ["图像生成", "模型社区"], link: "https://tensor.art", price: "免费/付费", priceType: "freemium", platforms: ["Web"], features: ["海量模型", "在线生图", "LoRA", "社区"] },
+    { name: "Civitai", icon: "🏛️", desc: "最大的 AI 艺术模型分享社区，下载和分享 Stable Diffusion 模型、LoRA、Embedding。", category: "image", tags: ["模型社区", "开源"], link: "https://civitai.com", price: "免费", priceType: "free", platforms: ["Web"], features: ["模型分享", "LoRA", "Embedding", "社区"] },
+    { name: "Luma Dream Machine", icon: "💭", desc: "Luma AI 推出的文生视频大模型，生成高质量、流畅的视频，支持图生视频。", category: "video", tags: ["视频生成", "高质量"], link: "https://lumalabs.ai/dream-machine", price: "免费/付费", priceType: "freemium", platforms: ["Web", "iOS"], features: ["文生视频", "图生视频", "高质量", "流畅"] },
+    { name: "Morph Studio", icon: "🎬", desc: "AI 视频生成平台，支持文字和图片转视频，风格多样，适合创意视频和社交媒体。", category: "video", tags: ["视频生成", "创意"], link: "https://www.morphstudio.com", price: "免费/付费", priceType: "freemium", platforms: ["Web", "Discord"], features: ["文生视频", "图生视频", "多风格", "社区"] },
+    { name: "Kaiber", icon: "🎨", desc: "AI 视频生成工具，专注于音乐视频和动画，支持音频反应式视频，风格化效果出色。", category: "video", tags: ["音乐视频", "动画"], link: "https://kaiber.ai", price: "免费/付费 $5/月", priceType: "freemium", platforms: ["Web", "iOS"], features: ["音乐视频", "音频反应", "风格化", "动画"] },
+    { name: "Genmo", icon: "🎭", desc: "AI 视频和图像生成平台，支持文生视频、图生视频、3D 模型，创意工具丰富。", category: "video", tags: ["视频生成", "3D"], link: "https://www.genmo.ai", price: "免费/付费", priceType: "freemium", platforms: ["Web", "Discord"], features: ["文生视频", "图生视频", "3D模型", "创意工具"] },
+    { name: "Vidu", icon: "🎥", desc: "生数科技推出的 AI 视频生成大模型，支持文生视频和图生视频，中文优化。", category: "video", tags: ["视频生成", "国内"], link: "https://www.vidu.studio", price: "免费/付费", priceType: "freemium", platforms: ["Web"], features: ["文生视频", "图生视频", "中文优化", "高质量"], cnAvailable: true },
+    { name: "即梦AI", icon: "✨", desc: "字节跳动推出的 AI 创作平台，支持文生图、文生视频，国内可用，免费额度。", category: "video", tags: ["视频生成", "图像生成", "国内"], link: "https://jimeng.jianying.com", price: "免费/付费", priceType: "freemium", platforms: ["Web", "iOS", "Android"], features: ["文生图", "文生视频", "国内可用", "免费额度"], cnAvailable: true },
+    { name: "通义万相", icon: "🌌", desc: "阿里巴巴推出的 AI 绘画和视频生成大模型，支持文生图、图生图、文生视频。", category: "video", tags: ["图像生成", "视频生成", "国内"], link: "https://tongyi.aliyun.com/wanxiang", price: "免费/付费", priceType: "freemium", platforms: ["Web"], features: ["文生图", "图生图", "文生视频", "阿里生态"], cnAvailable: true },
+    { name: "Tavus", icon: "🧑‍💼", desc: "AI 数字人视频平台，支持个性化视频生成，一个模板自动生成数千个定制视频。", category: "video", tags: ["数字人", "个性化"], link: "https://www.tavus.io", price: "付费 $499/月起", priceType: "paid", platforms: ["Web", "API"], features: ["数字人", "个性化视频", "API", "批量生成"] },
+    { name: "Elai.io", icon: "🎬", desc: "AI 视频生成平台，从文本创建专业视频，支持数字人、多语言配音、PPT 转视频。", category: "video", tags: ["数字人", "文本转视频"], link: "https://elai.io", price: "免费/付费 $23/月", priceType: "freemium", platforms: ["Web"], features: ["数字人", "文本转视频", "PPT转视频", "多语言"] },
+    { name: "Colossyan", icon: "🎥", desc: "AI 视频创作平台，专为企业培训和营销设计，支持数字人、多语言、屏幕录制。", category: "video", tags: ["数字人", "企业培训"], link: "https://www.colossyan.com", price: "免费/付费 $21/月", priceType: "freemium", platforms: ["Web"], features: ["数字人", "多语言", "屏幕录制", "企业级"] },
+    { name: "Vidnoz", icon: "🎞️", desc: "免费 AI 视频生成平台，支持数字人、文本转视频、AI 头像，适合营销和教育。", category: "video", tags: ["数字人", "免费"], link: "https://www.vidnoz.com", price: "免费/付费", priceType: "freemium", platforms: ["Web"], features: ["数字人", "文本转视频", "AI头像", "免费"] },
+    { name: "CodeGeeX", icon: "💻", desc: "智谱 AI 推出的代码大模型，支持代码生成、补全、翻译和解释，中文优化，免费使用。", category: "code", tags: ["代码补全", "国内", "免费"], link: "https://codegeex.cn", price: "免费", priceType: "free", platforms: ["VS Code", "JetBrains", "Web"], features: ["代码生成", "代码补全", "代码翻译", "中文优化"], cnAvailable: true },
+    { name: "通义灵码", icon: "⌨️", desc: "阿里巴巴推出的 AI 编程助手，支持代码补全、生成、解释和优化，集成阿里云生态。", category: "code", tags: ["代码补全", "国内", "阿里"], link: "https://tongyi.aliyun.com/lingma", price: "免费", priceType: "free", platforms: ["VS Code", "JetBrains"], features: ["代码补全", "代码生成", "代码解释", "阿里集成"], cnAvailable: true },
+    { name: "Amazon CodeWhisperer", icon: "🅰️", desc: "亚马逊推出的 AI 编程助手，实时代码建议，支持安全扫描，个人开发者免费。", category: "code", tags: ["代码补全", "亚马逊", "免费"], link: "https://aws.amazon.com/codewhisperer", price: "免费个人版/企业版", priceType: "free", platforms: ["VS Code", "JetBrains", "AWS"], features: ["代码建议", "安全扫描", "免费", "AWS集成"] },
+    { name: "Sourcegraph Cody", icon: "🔍", desc: "AI 编程助手，深度理解代码库，支持代码补全、对话、搜索，企业级代码智能。", category: "code", tags: ["代码理解", "企业"], link: "https://sourcegraph.com/cody", price: "免费/付费", priceType: "freemium", platforms: ["VS Code", "JetBrains", "Web"], features: ["代码库理解", "代码补全", "AI对话", "代码搜索"] },
+    { name: "CodeWP", icon: "🌐", desc: "专为 WordPress 设计的 AI 代码生成器，支持 WooCommerce、主流插件，快速生成代码片段。", category: "code", tags: ["WordPress", "代码生成"], link: "https://codewp.ai", price: "免费/付费 $12/月", priceType: "freemium", platforms: ["Web"], features: ["WordPress", "WooCommerce", "代码生成", "代码片段"] },
+    { name: "CodeRabbit", icon: "🐰", desc: "AI 代码审查工具，自动审查 Pull Request，提供行内建议，支持多种语言和 Git 平台。", category: "code", tags: ["代码审查", "PR"], link: "https://www.coderabbit.ai", price: "免费/付费", priceType: "freemium", platforms: ["GitHub", "GitLab", "Bitbucket"], features: ["AI代码审查", "行内建议", "PR摘要", "多平台"] },
+    { name: "Bark", icon: "🐕", desc: "Suno 开源的文本转语音模型，支持多语言、多说话人，能生成音乐、音效和简单对话。", category: "audio", tags: ["语音合成", "开源"], link: "https://github.com/suno-ai/bark", price: "免费开源", priceType: "free", platforms: ["本地", "API"], features: ["开源", "多语言", "音乐生成", "音效"] },
+    { name: "MusicGen", icon: "🎵", desc: "Meta 开源的 AI 音乐生成模型，根据文字描述生成音乐，支持多种风格和时长。", category: "audio", tags: ["音乐生成", "开源", "Meta"], link: "https://github.com/facebookresearch/audiocraft", price: "免费开源", priceType: "free", platforms: ["本地", "API"], features: ["开源", "文本生成音乐", "多风格", "Meta"] },
+    { name: "Mubert", icon: "🎶", desc: "AI 音乐生成平台，为视频、播客、应用生成免版税音乐，支持实时生成和 API。", category: "audio", tags: ["音乐生成", "免版税"], link: "https://mubert.com", price: "免费/付费 $14/月", priceType: "freemium", platforms: ["Web", "API"], features: ["免版税", "实时生成", "API", "多风格"] },
+    { name: "Soundful", icon: "🎹", desc: "AI 音乐生成工具，为创作者提供免版税背景音乐，支持自定义风格、节奏和情绪。", category: "audio", tags: ["音乐生成", "免版税"], link: "https://soundful.com", price: "免费/付费 $9.99/月", priceType: "freemium", platforms: ["Web"], features: ["免版税", "自定义", "无限下载", "多风格"] },
+    { name: "Voicemod", icon: "🎤", desc: "AI 实时语音变声工具，支持游戏、直播、聊天中的实时变声，多种声音效果。", category: "audio", tags: ["变声", "实时"], link: "https://www.voicemod.net", price: "免费/付费", priceType: "freemium", platforms: ["Windows", "Mac"], features: ["实时变声", "多种效果", "AI声音", "游戏集成"] },
+    { name: "Resemble AI", icon: "🎙️", desc: "AI 语音克隆和合成平台，支持声音克隆、实时语音转换、多语言配音，API 友好。", category: "audio", tags: ["语音克隆", "API"], link: "https://www.resemble.ai", price: "付费 $0.006/秒起", priceType: "paid", platforms: ["Web", "API"], features: ["声音克隆", "实时转换", "多语言", "API"] },
+    { name: "WellSaid Labs", icon: "🎧", desc: "AI 语音合成平台，生成自然逼真的语音，适合视频配音、有声书、培训材料。", category: "audio", tags: ["语音合成", "专业"], link: "https://wellsaidlabs.com", price: "付费 $49/月起", priceType: "paid", platforms: ["Web", "API"], features: ["自然语音", "多声音", "商业授权", "API"] },
+    { name: "Mem.ai", icon: "🧠", desc: "AI 驱动的笔记工具，自动整理和关联笔记，支持智能搜索、知识图谱，提升记忆效率。", category: "productivity", tags: ["笔记", "知识管理"], link: "https://get.mem.ai", price: "免费/付费 $8/月", priceType: "freemium", platforms: ["Web", "iOS", "Mac"], features: ["AI整理", "智能搜索", "知识关联", "自动标签"] },
+    { name: "Tana", icon: "🌲", desc: "AI 原生的知识管理和任务管理工具，支持超级标签、图谱视图，灵活强大。", category: "productivity", tags: ["知识管理", "任务管理"], link: "https://tana.inc", price: "免费/付费 $10/月", priceType: "freemium", platforms: ["Web", "Mac", "iOS"], features: ["超级标签", "图谱视图", "AI", "灵活"] },
+    { name: "Logseq", icon: "📝", desc: "开源的本地优先笔记工具，支持双向链接、大纲编辑、知识图谱，隐私安全。", category: "productivity", tags: ["笔记", "开源", "本地"], link: "https://logseq.com", price: "免费开源/付费 $5/月", priceType: "free", platforms: ["Windows", "Mac", "Linux", "iOS", "Android"], features: ["开源", "本地优先", "双向链接", "知识图谱"] },
+    { name: "Tome", icon: "📖", desc: "AI 演示文稿生成工具，用文字描述生成完整的故事型演示，支持嵌入多媒体内容。", category: "productivity", tags: ["PPT", "演示文稿"], link: "https://tome.app", price: "免费/付费 $10/月", priceType: "freemium", platforms: ["Web", "iOS"], features: ["AI生成", "故事型", "多媒体", "模板"] },
+    { name: "ChatPDF", icon: "📄", desc: "AI PDF 对话工具，上传 PDF 文件后可以用自然语言提问，快速获取文档中的信息。", category: "productivity", tags: ["PDF", "文档问答"], link: "https://www.chatpdf.com", price: "免费/付费 $5/月", priceType: "freemium", platforms: ["Web"], features: ["PDF对话", "快速提取", "多文档", "学术"] },
+    { name: "SciSpace", icon: "🔬", desc: "AI 学术研究助手，上传论文后可以提问、解释公式、翻译，支持 2 亿+ 论文搜索。", category: "productivity", tags: ["学术", "论文"], link: "https://typeset.io", price: "免费/付费 $12/月", priceType: "freemium", platforms: ["Web", "Chrome扩展"], features: ["论文问答", "公式解释", "2亿+论文", "写作辅助"] },
+    { name: "Elicit", icon: "🔍", desc: "AI 研究助手，自动化文献综述，搜索和总结学术论文，提取关键信息，加速研究。", category: "productivity", tags: ["学术", "文献综述"], link: "https://elicit.com", price: "免费/付费 $10/月", priceType: "freemium", platforms: ["Web"], features: ["文献搜索", "自动总结", "信息提取", "研究矩阵"] },
+    { name: "Consensus", icon: "⚖️", desc: "AI 搜索引擎，专门搜索学术论文，用证据回答问题，显示共识程度和引用。", category: "productivity", tags: ["学术搜索", "证据"], link: "https://consensus.app", price: "免费/付费", priceType: "freemium", platforms: ["Web"], features: ["学术搜索", "证据回答", "共识度", "引用"] },
+    { name: "Reclaim.ai", icon: "📅", desc: "AI 智能日程规划工具，自动安排任务、习惯和会议，优化时间管理，保护专注时间。", category: "productivity", tags: ["日程管理", "时间管理"], link: "https://reclaim.ai", price: "免费/付费 $8/月", priceType: "freemium", platforms: ["Web", "iOS", "Android"], features: ["智能排程", "任务管理", "习惯追踪", "日历集成"] }
 ];
 
 // ========== 分类配置 ==========
@@ -119,6 +173,19 @@ const categories = [
     { id: "code", name: "编程", icon: "💻" },
     { id: "audio", name: "音频", icon: "🎵" },
     { id: "productivity", name: "效率", icon: "⚡" }
+];
+
+// ========== 热门工具（手动精选）==========
+const hotTools = ["ChatGPT", "Midjourney", "Claude", "GitHub Copilot", "Runway", "Suno", "Cursor", "ElevenLabs", "Perplexity", "Gemini", "Sora", "Notion AI"];
+
+// ========== 博客榜单数据 ==========
+const blogPosts = [
+    { id: "best-ai-writing-tools-2026", title: "2026 年 10 大最佳 AI 写作工具对比评测", excerpt: "深度对比 ChatGPT、Claude、Jasper、Notion AI 等 10 款主流 AI 写作工具，帮你选择最适合的写作助手。", category: "写作", icon: "✍️", date: "2026-08-28", readTime: "8 分钟", cover: "linear-gradient(135deg, #667eea, #764ba2)" },
+    { id: "best-ai-image-tools-2026", title: "2026 年 12 款最佳 AI 绘画工具全面评测", excerpt: "Midjourney、DALL·E 3、Stable Diffusion、Flux 等 12 款 AI 绘画工具横向对比，含价格、画质、易用性。", category: "图像", icon: "🎨", date: "2026-08-25", readTime: "10 分钟", cover: "linear-gradient(135deg, #f093fb, #f5576c)" },
+    { id: "best-ai-video-tools-2026", title: "AI 视频生成工具终极指南：Sora、Runway、可灵等 8 款对比", excerpt: "文生视频、图生视频、数字人视频，8 款主流 AI 视频工具深度对比，哪款最适合你？", category: "视频", icon: "🎬", date: "2026-08-20", readTime: "12 分钟", cover: "linear-gradient(135deg, #4facfe, #00f2fe)" },
+    { id: "best-ai-coding-tools-2026", title: "程序员必备：10 款最佳 AI 编程工具推荐", excerpt: "GitHub Copilot、Cursor、Claude Code、通义灵码等 10 款 AI 编程助手对比，提升编码效率 10 倍。", category: "编程", icon: "💻", date: "2026-08-15", readTime: "9 分钟", cover: "linear-gradient(135deg, #43e97b, #38f9d7)" },
+    { id: "free-ai-tools-2026", title: "2026 年 30 款完全免费的 AI 工具合集", excerpt: "不想花钱用 AI？这 30 款免费 AI 工具覆盖写作、绘画、编程、视频，够用一整年。", category: "合集", icon: "🎁", date: "2026-08-10", readTime: "15 分钟", cover: "linear-gradient(135deg, #fa709a, #fee140)" },
+    { id: "ai-tools-for-students", title: "学生党必备：8 款 AI 工具提升学习效率", excerpt: "论文写作、笔记整理、知识总结、语言学习，8 款 AI 工具让你的学习事半功倍。", category: "效率", icon: "🎓", date: "2026-08-05", readTime: "7 分钟", cover: "linear-gradient(135deg, #a18cd1, #fbc2eb)" }
 ];
 
 // ========== 多语言 ==========
@@ -200,6 +267,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initBackToTop();
     initRouter();
     renderTools();
+    renderHotTools();
+    renderCategoryCards();
+    renderRecentTools();
+    renderBlogGrid();
     updateFavCount();
     document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('zh-CN');
 });
@@ -249,6 +320,11 @@ function handleRoute() {
         showDetail(toolName);
     } else if (hash === '#/compare') {
         showCompareView();
+    } else if (hash === '#/blog') {
+        showBlog();
+    } else if (hash.startsWith('#/blog/')) {
+        const articleId = hash.replace('#/blog/', '');
+        showBlogArticle(articleId);
     } else if (hash === '#/about') {
         document.getElementById('aboutView').style.display = 'block';
     } else if (hash === '#/privacy') {
@@ -262,8 +338,9 @@ function handleRoute() {
 }
 
 function hideAllViews() {
-    ['homeView', 'detailView', 'compareView', 'aboutView', 'privacyView', 'notFoundView'].forEach(id => {
-        document.getElementById(id).style.display = 'none';
+    ['homeView', 'detailView', 'compareView', 'blogView', 'blogArticleView', 'aboutView', 'privacyView', 'notFoundView'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
     });
 }
 
@@ -355,6 +432,9 @@ function renderTools() {
         const avgRating = toolRatings.length > 0 ? (toolRatings.reduce((a,b)=>a+b,0)/toolRatings.length).toFixed(1) : null;
         const isSelected = compareList.includes(tool.name);
         
+        const priceLabel = tool.priceType === 'free' ? '免费' : tool.priceType === 'paid' ? '付费' : '免费+付费';
+        const cnBadge = tool.cnAvailable ? '<span class="cn-badge">国内可用</span>' : '';
+        
         return `
         <div class="tool-card ${compareMode ? 'compare-mode' : ''} ${isSelected ? 'selected' : ''}" 
              style="animation-delay: ${Math.min(index * 0.03, 1)}s"
@@ -363,11 +443,14 @@ function renderTools() {
             <button class="tool-fav ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite('${tool.name}')" title="${isFav ? '取消收藏' : '收藏'}">${isFav ? '⭐' : '☆'}</button>
             <div class="tool-icon">${tool.icon}</div>
             <div class="tool-content">
-                <h3 class="tool-name">${tool.name}</h3>
-                ${avgRating ? `<div class="card-rating"><span class="card-rating-stars">★</span> ${avgRating} (${toolRatings.length})</div>` : ''}
+                <h3 class="tool-name">${tool.name}${cnBadge}</h3>
                 <p class="tool-desc">${tool.desc}</p>
                 <div class="tool-tags">
                     ${tool.tags.slice(0, 3).map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+                <div class="tool-card-meta">
+                    <span class="tool-card-price-tag ${tool.priceType}">${priceLabel}</span>
+                    ${avgRating ? `<span class="tool-card-rating-mini">★ ${avgRating} (${toolRatings.length})</span>` : '<span style="color:var(--text-muted);font-size:0.75rem;">暂无评分</span>'}
                 </div>
                 <div class="tool-footer">
                     <a href="${tool.link}" target="_blank" rel="noopener noreferrer" class="tool-link" onclick="event.stopPropagation(); trackOutboundLink('${tool.name}')">访问官网 →</a>
@@ -887,4 +970,234 @@ function trackEvent(name, params) {
 
 function trackOutboundLink(toolName) {
     trackEvent('outbound_click', { tool: toolName });
+}
+
+// ========== 热门工具渲染 ==========
+function renderHotTools() {
+    const grid = document.getElementById('hotGrid');
+    if (!grid) return;
+    const ratings = getRatings();
+    
+    grid.innerHTML = hotTools.slice(0, 6).map((name, index) => {
+        const tool = tools.find(t => t.name === name);
+        if (!tool) return '';
+        const toolRatings = ratings[tool.name] || [];
+        const avgRating = toolRatings.length > 0 ? (toolRatings.reduce((a,b)=>a+b,0)/toolRatings.length).toFixed(1) : '4.5';
+        
+        return `
+        <div class="hot-card" onclick="navigateTo('detail', '${tool.name}')">
+            <div class="hot-card-rank">TOP ${index + 1}</div>
+            <div class="hot-card-header">
+                <div class="hot-card-icon">${tool.icon}</div>
+                <div class="hot-card-name">${tool.name}</div>
+            </div>
+            <div class="hot-card-desc">${tool.desc}</div>
+            <div class="hot-card-footer">
+                <span class="hot-card-price">${tool.priceType === 'free' ? '免费' : tool.priceType === 'paid' ? '付费' : '免费+付费'}</span>
+                <span class="hot-card-rating">★ ${avgRating}</span>
+            </div>
+        </div>
+        `;
+    }).join('');
+}
+
+// ========== 分类卡片渲染 ==========
+function renderCategoryCards() {
+    const container = document.getElementById('categoryCards');
+    if (!container) return;
+    
+    container.innerHTML = categories.filter(c => c.id !== 'all').map(cat => {
+        const count = tools.filter(t => t.category === cat.id).length;
+        return `
+        <div class="category-card" onclick="filterCategory('${cat.id}')">
+            <div class="category-card-icon">${cat.icon}</div>
+            <div class="category-card-name">${cat.name}</div>
+            <div class="category-card-count">${count} 个工具</div>
+        </div>
+        `;
+    }).join('');
+}
+
+// ========== 最近添加渲染 ==========
+function renderRecentTools() {
+    const container = document.getElementById('recentScroll');
+    if (!container) return;
+    
+    // 取最后添加的 8 个工具
+    const recent = tools.slice(-8).reverse();
+    
+    container.innerHTML = recent.map(tool => `
+        <div class="recent-card" onclick="navigateTo('detail', '${tool.name}')">
+            <span class="recent-card-badge">NEW</span>
+            <div class="recent-card-header">
+                <div class="recent-card-icon">${tool.icon}</div>
+                <div class="recent-card-name">${tool.name}</div>
+            </div>
+            <div class="recent-card-desc">${tool.desc}</div>
+        </div>
+    `).join('');
+}
+
+// ========== 博客榜单渲染 ==========
+function renderBlogGrid() {
+    const grid = document.getElementById('blogGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = blogPosts.slice(0, 3).map(post => `
+        <div class="blog-card" onclick="showBlogArticle('${post.id}')">
+            <div class="blog-card-cover" style="background:${post.cover};">
+                ${post.icon}
+            </div>
+            <div class="blog-card-body">
+                <span class="blog-card-category">${post.category}</span>
+                <h3 class="blog-card-title">${post.title}</h3>
+                <p class="blog-card-excerpt">${post.excerpt}</p>
+                <div class="blog-card-meta">
+                    <span>📅 ${post.date}</span>
+                    <span>⏱️ ${post.readTime}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ========== 博客列表页 ==========
+function showBlog() {
+    hideAllViews();
+    document.getElementById('blogView').style.display = 'block';
+    const container = document.getElementById('blogListContent');
+    if (!container) return;
+    
+    container.innerHTML = `<div class="blog-grid">` + blogPosts.map(post => `
+        <div class="blog-card" onclick="showBlogArticle('${post.id}')">
+            <div class="blog-card-cover" style="background:${post.cover};">
+                ${post.icon}
+            </div>
+            <div class="blog-card-body">
+                <span class="blog-card-category">${post.category}</span>
+                <h3 class="blog-card-title">${post.title}</h3>
+                <p class="blog-card-excerpt">${post.excerpt}</p>
+                <div class="blog-card-meta">
+                    <span>📅 ${post.date}</span>
+                    <span>⏱️ ${post.readTime}</span>
+                </div>
+            </div>
+        </div>
+    `).join('') + `</div>`;
+    
+    window.scrollTo(0, 0);
+    trackPageView('/blog', '精选榜单 - AI Tools Radar');
+}
+
+// ========== 博客文章页 ==========
+function showBlogArticle(articleId) {
+    hideAllViews();
+    document.getElementById('blogArticleView').style.display = 'block';
+    const post = blogPosts.find(p => p.id === articleId);
+    const container = document.getElementById('blogArticleContent');
+    if (!container || !post) { showBlog(); return; }
+    
+    // 根据分类生成相关工具推荐
+    const categoryMap = { "写作": "writing", "图像": "image", "视频": "video", "编程": "code", "效率": "productivity" };
+    const relatedCategory = categoryMap[post.category] || 'writing';
+    const relatedTools = tools.filter(t => t.category === relatedCategory).slice(0, 5);
+    
+    container.innerHTML = `
+        <div class="blog-article">
+            <span class="blog-card-category">${post.category}</span>
+            <h1>${post.title}</h1>
+            <div class="blog-article-meta">
+                📅 ${post.date} · ⏱️ ${post.readTime} · 👁️ 1,234 阅读
+            </div>
+            
+            <p>${post.excerpt}</p>
+            
+            <h2>📋 榜单概览</h2>
+            <p>本文精选了 ${relatedTools.length} 款 ${post.category}领域的优秀 AI 工具，从功能、价格、易用性等多个维度进行对比，帮你快速找到最适合的工具。</p>
+            
+            <h2>🏆 推荐工具</h2>
+            ${relatedTools.map((tool, i) => `
+                <div class="blog-article-tool-card">
+                    <h4>${i + 1}. ${tool.icon} ${tool.name}</h4>
+                    <p>${tool.desc}</p>
+                    <p><strong>核心功能：</strong>${(tool.features || []).join('、')}</p>
+                    <span class="tool-price">💰 ${tool.price || '未知'}</span>
+                    <div style="margin-top:10px;">
+                        <a href="${tool.link}" target="_blank" rel="noopener" class="detail-btn detail-btn-primary" style="display:inline-block;padding:8px 16px;font-size:0.85rem;text-decoration:none;" onclick="trackOutboundLink('${tool.name}')">访问官网 →</a>
+                        <a href="#/tool/${encodeURIComponent(tool.name)}" onclick="navigateTo('detail','${tool.name}');return false;" class="detail-btn detail-btn-secondary" style="display:inline-block;padding:8px 16px;font-size:0.85rem;text-decoration:none;margin-left:8px;">查看详情</a>
+                    </div>
+                </div>
+            `).join('')}
+            
+            <h2>💡 如何选择</h2>
+            <ul>
+                <li><strong>初学者</strong>：建议从免费或有免费额度的工具开始，降低学习成本</li>
+                <li><strong>专业用户</strong>：关注工具的高级功能、输出质量和团队协作能力</li>
+                <li><strong>企业用户</strong>：优先考虑数据安全、API 支持和客户服务</li>
+                <li><strong>预算有限</strong>：关注免费开源工具，或选择性价比高的 freemium 方案</li>
+            </ul>
+            
+            <h2>🎯 总结</h2>
+            <p>以上就是本期 ${post.category}领域的 AI 工具推荐。每个工具都有其特色和适用场景，建议根据自己的实际需求选择 1-2 款深入使用。AI 工具迭代很快，我们会持续更新最新的工具评测，欢迎收藏本站。</p>
+            
+            <div style="margin-top:30px;padding:20px;background:var(--bg-primary);border-radius:12px;text-align:center;">
+                <p style="margin-bottom:10px;font-weight:600;">觉得有用？分享给朋友吧！</p>
+                <button class="detail-share-btn" onclick="openShare('${relatedTools[0]?.name || 'ChatGPT'}')">🔗 分享文章</button>
+            </div>
+        </div>
+    `;
+    
+    window.scrollTo(0, 0);
+    trackPageView('/blog/' + articleId, post.title + ' - AI Tools Radar');
+}
+
+// ========== 快速搜索 ==========
+function quickSearch(keyword) {
+    document.getElementById('searchInput').value = keyword;
+    currentSearch = keyword;
+    applyFilters();
+    scrollToTools();
+    trackEvent('quick_search', { keyword });
+}
+
+// ========== 滚动到工具列表 ==========
+function scrollToTools() {
+    const section = document.getElementById('toolsSection');
+    if (section) section.scrollIntoView({ behavior: 'smooth' });
+}
+
+// ========== 分类筛选（页脚/分类卡片用）==========
+function filterCategory(catId) {
+    currentCategory = catId;
+    showFavoritesOnly = false;
+    document.getElementById('favToggle').classList.remove('active');
+    document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.category === catId);
+    });
+    applyFilters();
+    scrollToTools();
+    trackEvent('category_filter', { category: catId });
+}
+
+// ========== 邮件订阅 ==========
+function subscribeNewsletter(e) {
+    e.preventDefault();
+    const emailInput = e.target.querySelector('input[type="email"]');
+    const email = emailInput ? emailInput.value : '';
+    
+    if (!email || !email.includes('@')) {
+        showToast('请输入有效的邮箱地址');
+        return;
+    }
+    
+    // 保存到本地（实际项目中应发送到后端）
+    const subscribers = JSON.parse(localStorage.getItem('newsletterSubscribers') || '[]');
+    if (!subscribers.includes(email)) {
+        subscribers.push(email);
+        localStorage.setItem('newsletterSubscribers', JSON.stringify(subscribers));
+    }
+    
+    showToast('🎉 订阅成功！感谢你的关注');
+    if (emailInput) emailInput.value = '';
+    trackEvent('newsletter_subscribe', { email });
 }
