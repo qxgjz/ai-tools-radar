@@ -171,6 +171,87 @@ var ToolMetricsDB = {
       pros: ['模板丰富', '上手简单', '一站式设计'],
       cons: ['AI功能一般', '高级模板付费', '精细控制不足'],
       benchmark: { '模板质量': 9.0, 'AI生成': 8.0, '易用性': 9.5 }
+    },
+    'dall-e-3': {
+      responseSpeed: 8.5, outputQuality: 9.2, apiLatency: 15000,
+      freeTier: '有限（ChatGPT免费版）', contextWindow: 'N/A',
+      multilingual: 8.5, codingAbility: 0, creativity: 9.0, accuracy: 8.8,
+      lastTested: '2026-08-15', testVersion: 'DALL-E 3',
+      pros: ['集成在ChatGPT中', '文字理解准确', '图像质量高', '支持编辑和修改'],
+      cons: ['风格多样性不如Midjourney', '价格较贵', '分辨率有限', '艺术感一般'],
+      benchmark: { '图像质量': 9.0, '文字渲染': 9.2, '提示词理解': 9.0 }
+    },
+    'stable-diffusion': {
+      responseSpeed: 7.0, outputQuality: 8.8, apiLatency: 20000,
+      freeTier: '完全免费（开源）', contextWindow: 'N/A',
+      multilingual: 7.0, codingAbility: 0, creativity: 9.2, accuracy: 8.0,
+      lastTested: '2026-08-15', testVersion: 'SDXL 1.0',
+      pros: ['开源免费', '可本地部署', '模型生态丰富', '完全可控', '无审查限制'],
+      cons: ['需要技术能力', '生成速度慢', '界面不友好', '需要好显卡', '默认模型质量一般'],
+      benchmark: { '图像质量': 8.5, '自由度': 10, '社区模型': 9.5 }
+    },
+    'gemini': {
+      responseSpeed: 9.3, outputQuality: 9.0, apiLatency: 600,
+      freeTier: '有限（Gemini免费版）', contextWindow: '1M tokens',
+      multilingual: 9.0, codingAbility: 9.0, creativity: 8.8, accuracy: 9.0,
+      lastTested: '2026-08-20', testVersion: 'Gemini 1.5 Pro',
+      pros: ['超长上下文（1M tokens）', '多模态能力强', 'Google搜索集成', '免费版额度大', '速度快'],
+      cons: ['长文本质量不如Claude', '创意写作一般', '偶尔幻觉', 'API价格波动'],
+      benchmark: { 'MMLU': 87.5, 'HumanEval': 89.0, '多模态': 9.2 }
+    },
+    'perplexity': {
+      responseSpeed: 9.5, outputQuality: 8.8, apiLatency: 800,
+      freeTier: '有限（免费版5次/天）', contextWindow: '200K',
+      multilingual: 8.5, codingAbility: 7.0, creativity: 7.5, accuracy: 9.5,
+      lastTested: '2026-08-18', testVersion: 'Sonar Large',
+      pros: ['实时搜索集成', '引用来源准确', '事实性最强', '回答简洁', '速度快'],
+      cons: ['创意写作弱', '长文生成一般', '免费版限制严格', '价格较贵'],
+      benchmark: { '事实准确性': 9.5, '引用质量': 9.2, '搜索速度': 9.5 }
+    },
+    'adobe-firefly': {
+      responseSpeed: 8.8, outputQuality: 8.5, apiLatency: 12000,
+      freeTier: '25积分/月', contextWindow: 'N/A',
+      multilingual: 7.5, codingAbility: 0, creativity: 8.5, accuracy: 8.5,
+      lastTested: '2026-08-10', testVersion: 'Firefly Image 3',
+      pros: ['商用安全（训练数据合规）', '与Adobe生态集成', '文字渲染好', '企业级支持'],
+      cons: ['艺术感不如Midjourney', '免费额度少', '风格多样性有限', '价格较贵'],
+      benchmark: { '商用安全': 10, '文字渲染': 9.0, '图像质量': 8.5 }
+    },
+    'leonardo-ai': {
+      responseSpeed: 8.5, outputQuality: 8.8, apiLatency: 10000,
+      freeTier: '150积分/天', contextWindow: 'N/A',
+      multilingual: 7.0, codingAbility: 0, creativity: 9.0, accuracy: 8.2,
+      lastTested: '2026-08-12', testVersion: 'Leonardo XL',
+      pros: ['游戏资产质量高', '免费额度 generous', '模型多样性好', 'Canvas编辑功能强'],
+      cons: ['界面较复杂', '通用图像不如Midjourney', '中文支持一般'],
+      benchmark: { '游戏资产': 9.2, '模型多样性': 9.0, '免费额度': 8.5 }
+    },
+    'gamma': {
+      responseSpeed: 9.0, outputQuality: 8.5, apiLatency: 5000,
+      freeTier: '400积分/月', contextWindow: 'N/A',
+      multilingual: 8.0, codingAbility: 0, creativity: 8.5, accuracy: 8.0,
+      lastTested: '2026-08-08', testVersion: '最新',
+      pros: ['一键生成PPT', '模板美观', '支持网页和文档', '上手容易', '免费额度足够'],
+      cons: ['自定义程度有限', '高级模板付费', '导出格式有限', '复杂排版能力弱'],
+      benchmark: { '生成速度': 9.0, '模板美观': 8.8, '易用性': 9.2 }
+    },
+    'tome': {
+      responseSpeed: 8.8, outputQuality: 8.3, apiLatency: 6000,
+      freeTier: '有限', contextWindow: 'N/A',
+      multilingual: 7.5, codingAbility: 0, creativity: 8.5, accuracy: 7.8,
+      lastTested: '2026-08-08', testVersion: '最新',
+      pros: ['AI生成演示文稿', '叙事式排版', '集成AI图像', '协作功能好'],
+      cons: ['价格较贵', '自定义程度有限', '导出功能弱', '不如Gamma灵活'],
+      benchmark: { '叙事排版': 8.8, 'AI集成': 8.5, '易用性': 8.5 }
+    },
+    'figma-ai': {
+      responseSpeed: 9.0, outputQuality: 8.8, apiLatency: 3000,
+      freeTier: '有限（Figma免费版）', contextWindow: 'N/A',
+      multilingual: 7.5, codingAbility: 6.0, creativity: 8.8, accuracy: 8.5,
+      lastTested: '2026-08-05', testVersion: 'Figma AI',
+      pros: ['与Figma深度集成', 'UI设计生成质量高', '自动布局', '组件生成', '设计师生态好'],
+      cons: ['需要Figma订阅', '主要适合UI设计', '通用设计能力一般', '学习曲线'],
+      benchmark: { 'UI设计': 9.2, '集成度': 9.5, '组件生成': 8.8 }
     }
   },
 
