@@ -1,0 +1,18 @@
+# AI工具雷达 - 自动化采集系统依赖
+# Python Dependencies for AI Tools Radar Automation
+
+# 核心依赖
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# 可选：浏览器自动化（用于反爬强的网站）
+playwright>=1.40.0
+
+# 可选：HTTP请求（urllib已内置，requests更方便）
+requests>=2.31.0
+
+# 可选：高级HTTP请求（模拟浏览器TLS指纹，突破反爬）
+curl_cffi>=0.6.0
+
+# 环境变量管理
+python-dotenv>=1.0.0
