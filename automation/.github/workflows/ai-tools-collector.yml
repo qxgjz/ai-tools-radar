@@ -1,0 +1,165 @@
+# AI工具信息自动采集器 - GitHub Actions 定时任务
+# 每周一早上9点（UTC）自动运行，采集新的AI工具
+
+name: AI Tools Auto Collector
+
+on:
+  # 定时触发：每周一 UTC 01:00（北京时间 09:00）
+  schedule:
+    - cron: '0 1 * * 1'
+
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      sources:
+        description: '数据源 (逗号分隔)'
+        required: false
+        default: 'producthunt'
+      verbose:
+        description: '详细日志'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    name: Collect AI Tools
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          cd automation
+          pip install --upgrade pip
+          pip install curl_cffi beautifulsoup4 lxml python-dotenv
+          python -m playwright install chromium
+
+      - name: Run AI tools collector
+        id: collect
+        run: |
+          cd automation
+          SOURCES="${{ github.event.inputs.sources || 'producthunt' }}"
+          VERBOSE="${{ github.event.inputs.verbose || 'false' }}"
+
+          if [ "$VERBOSE" = "true" ]; then
+            python main.py --sources $(echo $SOURCES | tr ',' ' ') --verbose
+          else
+            python main.py --sources $(echo $SOURCES | tr ',' ' ')
+          fi
+
+      - name: Get report summary
+        id: summary
+        run: |
+          cd automation
+          # 找到最新的报告文件
+          LATEST_REPORT=$(ls -t output/new_tools_report_*.json 2>/dev/null | head -1)
+          if [ -n "$LATEST_REPORT" ]; then
+            echo "report_file=$LATEST_REPORT" >> $GITHUB_OUTPUT
+            # 提取摘要信息
+            python3 -c "
+          import json
+          with open('$LATEST_REPORT', 'r') as f:
+              data = json.load(f)
+          summary = data.get('summary', {})
+          print(f\"new_tools={summary.get('new_tools', 0)}\")
+          print(f\"total_scraped={summary.get('total_scraped', 0)}\")
+          print(f\"duplicates={summary.get('duplicates', 0)}\")
+          " >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit results
+        if: steps.summary.outputs.new_tools > 0
+        run: |
+          cd automation
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # 添加新发现的工具数据
+          git add data/raw/*.json
+          git add data/processed/*.json
+          git add output/*.json
+
+          # 提交
+          git commit -m "🤖 Auto: New AI tools discovered (${{ steps.summary.outputs.new_tools }} new)" || echo "No changes to commit"
+
+          # 推送
+          git push || echo "Push failed or no changes"
+
+      - name: Create Issue for review
+        if: steps.summary.outputs.new_tools > 0
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const newTools = parseInt('${{ steps.summary.outputs.new_tools }}', 10);
+            const totalScraped = parseInt('${{ steps.summary.outputs.total_scraped }}', 10);
+            const reportFile = '${{ steps.summary.outputs.report_file }}';
+
+            const issueBody = `
+            ## 🤖 AI工具自动采集报告
+
+            **采集时间**: ${{ github.event.head_commit.timestamp || 'Scheduled run' }}
+            **数据源**: Product Hunt
+
+            ### 📊 采集摘要
+            - **采集工具总数**: ${totalScraped}
+            - **新增工具**: ${newTools} ⭐
+            - **重复工具**: ${{ steps.summary.outputs.duplicates }}
+
+            ### 📋 待审核
+            新增工具需要人工审核后录入工具库。
+
+            报告文件: \`${reportFile}\`
+
+            ### ✅ 审核清单
+            - [ ] 检查工具信息准确性
+            - [ ] 验证工具官网可访问
+            - [ ] 确认工具分类正确
+            - [ ] 撰写工具描述和优缺点
+            - [ ] 录入工具库
+
+            ---
+            *此issue由AI工具自动采集器自动创建*
+            `;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🤖 新AI工具发现报告 - ${newTools}个新工具待审核`,
+              body: issueBody,
+              labels: ['ai-tools', 'automation', 'review-needed']
+            });
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-tools-report-${{ github.run_id }}
+          path: |
+            automation/output/*.json
+            automation/data/processed/*.json
+          retention-days: 30
+
+      - name: Job summary
+        run: |
+          echo "## 🤖 AI工具采集完成" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **采集工具总数**: ${{ steps.summary.outputs.total_scraped }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **新增工具**: ${{ steps.summary.outputs.new_tools }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **重复工具**: ${{ steps.summary.outputs.duplicates }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.summary.outputs.new_tools }}" -gt 0 ]; then
+            echo "✅ 已创建审核Issue，请查看并审核新工具" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️  本次未发现新工具" >> $GITHUB_STEP_SUMMARY
+          fi
