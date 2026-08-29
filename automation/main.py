@@ -28,6 +28,8 @@ from utils.helpers import (
     normalize_tool_name,
 )
 from scrapers.producthunt_rss_scraper import ProductHuntRSSScraper
+from scrapers.g2_scraper import G2Scraper
+from scrapers.tool_website_scraper import ToolWebsiteScraper
 
 
 class AIToolsCollector:
@@ -72,6 +74,40 @@ class AIToolsCollector:
         products = scraper.scrape(filter_ai=True)
         scraper.save_results(products)
         return products
+
+    def collect_from_g2(self, categories: list = None, max_tools: int = 20) -> list:
+        """
+        从G2采集AI工具（使用Firecrawl突破反爬）
+
+        Args:
+            categories: 分类列表，默认全部
+            max_tools: 每个分类最大工具数
+
+        Returns:
+            采集到的工具列表
+        """
+        logger.info("开始从G2采集AI工具")
+        scraper = G2Scraper()
+        tools = scraper.scrape_all_categories(categories=categories, max_tools_per_category=max_tools)
+        scraper.save_results("g2_tools.json")
+        return tools
+
+    def collect_tool_details(self, tools: list, delay: int = 3) -> list:
+        """
+        采集工具官网详细信息
+
+        Args:
+            tools: 工具列表，每个包含name和url
+            delay: 请求间隔
+
+        Returns:
+            包含详细信息的工具列表
+        """
+        logger.info(f"开始采集 {len(tools)} 个工具官网详情")
+        scraper = ToolWebsiteScraper()
+        detailed_tools = scraper.batch_scrape_tools(tools, delay=delay)
+        scraper.save_results("tool_details.json")
+        return detailed_tools
 
     def process_tools(self, tools: list, source: str = "unknown") -> dict:
         """
@@ -217,6 +253,7 @@ class AIToolsCollector:
 
         Args:
             sources: 数据源列表，默认全部
+                     支持: producthunt, g2, tool_details
 
         Returns:
             采集结果
@@ -234,6 +271,24 @@ class AIToolsCollector:
                 self.process_tools(ph_tools, "producthunt")
             except Exception as e:
                 logger.error(f"Product Hunt采集失败: {e}")
+
+        if "g2" in sources:
+            try:
+                g2_tools = self.collect_from_g2(max_tools=15)
+                self.process_tools(g2_tools, "g2")
+            except Exception as e:
+                logger.error(f"G2采集失败: {e}")
+
+        if "tool_details" in sources:
+            try:
+                # 对新发现的工具采集官网详情
+                if self.new_tools:
+                    logger.info(f"为 {len(self.new_tools)} 个新工具采集官网详情")
+                    detailed_tools = self.collect_tool_details(self.new_tools)
+                    # 更新new_tools
+                    self.new_tools = detailed_tools
+            except Exception as e:
+                logger.error(f"工具详情采集失败: {e}")
 
         # 生成输出
         output = self.generate_output()
@@ -258,7 +313,7 @@ def main():
         "--sources",
         nargs="+",
         default=["producthunt"],
-        help="数据源列表 (默认: producthunt)",
+        help="数据源列表 (默认: producthunt，支持: producthunt, g2, tool_details)",
     )
     parser.add_argument(
         "--verbose",
