@@ -1,0 +1,104 @@
+# AI Tools Radar - 每周自动采集新工具
+# 每周一早上8点（UTC）自动运行，采集Product Hunt和G2的新AI工具
+
+name: Weekly AI Tools Collection
+
+on:
+  schedule:
+    # 每周一早上8点 UTC（北京时间下午4点）
+    - cron: '0 8 * * 1'
+  # 支持手动触发
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  collect-tools:
+    runs-on: ubuntu-latest
+    name: 采集新AI工具
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 安装依赖
+        run: |
+          cd automation
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || echo "requirements.txt not found, using default"
+
+      - name: 运行Product Hunt采集
+        id: ph-collect
+        run: |
+          cd automation
+          echo "=== 开始采集Product Hunt新工具 ==="
+          python main.py --sources producthunt 2>&1 || echo "Product Hunt采集完成或失败"
+          echo "=== Product Hunt采集完成 ==="
+
+      - name: 运行G2采集
+        id: g2-collect
+        run: |
+          cd automation
+          echo "=== 开始采集G2工具评分 ==="
+          python main.py --sources g2 2>&1 || echo "G2采集完成或失败"
+          echo "=== G2采集完成 ==="
+
+      - name: 检查是否有新工具
+        id: check-new
+        run: |
+          cd automation
+          echo "=== 检查新工具 ==="
+          # 检查最新的报告文件
+          LATEST_REPORT=$(ls -t output/new_tools_report_*.json 2>/dev/null | head -1)
+          if [ -n "$LATEST_REPORT" ]; then
+            echo "最新报告: $LATEST_REPORT"
+            NEW_COUNT=$(python -c "import json; data=json.load(open('$LATEST_REPORT')); print(data.get('summary',{}).get('new_tools',0))" 2>/dev/null || echo "0")
+            echo "新工具数量: $NEW_COUNT"
+            echo "new_tools=$NEW_COUNT" >> $GITHUB_OUTPUT
+          else
+            echo "未找到报告文件"
+            echo "new_tools=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 提交采集数据
+        if: steps.check-new.outputs.new_tools > 0
+        run: |
+          cd automation
+          echo "=== 提交采集数据到GitHub ==="
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+
+          # 添加采集的数据文件
+          git add data/ output/ 2>/dev/null || true
+
+          # 提交
+          git commit -m "🤖 自动采集: 新增 ${{ steps.check-new.outputs.new_tools }} 个AI工具 (每周自动采集)" || echo "没有新文件需要提交"
+          git push || echo "推送失败或无更新"
+
+          echo "=== 提交完成 ==="
+
+      - name: 生成采集报告
+        run: |
+          cd automation
+          echo "=== 生成本周采集报告 ==="
+          echo "采集时间: $(date)"
+          echo "新工具数量: ${{ steps.check-new.outputs.new_tools }}"
+          echo "=== 报告生成完成 ==="
+
+      - name: 上传采集结果
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-tools-collection-results
+          path: |
+            automation/data/
+            automation/output/
+          retention-days: 30
