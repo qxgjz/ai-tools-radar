@@ -107,29 +107,46 @@ class G2Scraper(FirecrawlScraper):
         """
         tools = []
 
-        # G2的产品通常以链接形式出现，格式如：[产品名](url)
-        # 评分通常是数字，如4.5/5
-        # 评论数通常是"xxx reviews"
-
-        # 方法1：提取所有产品链接
-        # G2产品链接格式：https://www.g2.com/products/xxx
-        product_pattern = r'\[([^\]]+)\]\((https://www\.g2\.com/products/[^)]+)\)'
+        # G2产品链接格式：https://www.g2.com/products/xxx/reviews（不带查询参数）
+        # 过滤掉带查询参数的链接（如 /reviews?qs=pros-and-cons）
+        product_pattern = r'\[([^\]]+)\]\((https://www\.g2\.com/products/[^/?]+/reviews)\)'
         matches = re.findall(product_pattern, markdown)
+
+        # 需要过滤的名称关键词（评价维度、按钮等）
+        filter_keywords = [
+            "ease of use", "writing improvement", "incorrect corrections",
+            "learning curve", "quality of support", "meets requirements",
+            "recommendation", "likelihood to recommend", "get a quote",
+            "sign up", "log in", "login", "register", "download",
+            "read more", "learn more", "click here", "view all",
+            "compare", "overview", "highest rated", "easiest to use",
+            "free", "leader", "contender", "niche", "emerging",
+            "products", "categories", "reviews", "pros and cons",
+            "what do you like best", "what do you dislike",
+        ]
 
         seen_names = set()
 
         for name, url in matches:
             name = clean_text(name)
-            if not name or len(name) < 2:
+
+            # 过滤条件
+            if not name or len(name) < 2 or len(name) > 50:
                 continue
             if name.lower() in seen_names:
                 continue
-            if name.lower() in ["overview", "highest rated", "easiest to use", "free",
-                                 "leader", "contender", "niche", "emerging",
-                                 "products", "categories", "compare", "reviews"]:
+            # 过滤包含括号数字的（如 "Ease of Use (4749)"）
+            if re.search(r'\(\d+\)', name):
+                continue
+            # 过滤评价维度和按钮关键词
+            name_lower = name.lower()
+            if any(keyword in name_lower for keyword in filter_keywords):
+                continue
+            # 过滤纯数字或纯符号
+            if re.match(r'^[\d\s\.\,\(\)\-\+\*\/]+$', name):
                 continue
 
-            seen_names.add(name.lower())
+            seen_names.add(name_lower)
 
             tool = {
                 "name": name,
@@ -146,37 +163,40 @@ class G2Scraper(FirecrawlScraper):
 
             tools.append(tool)
 
-        # 方法2：尝试提取评分和评论数
-        # G2评分格式通常是：4.5/5 或 4.5 out of 5
-        # 评论数格式：1,234 reviews
-
-        # 在每个工具名称附近查找评分和评论数
+        # 提取评分和评论数
         for tool in tools:
             name = tool["name"]
-            # 找到工具名称在markdown中的位置
+            # 找到工具名称在markdown中的位置（找第一个出现的位置）
             name_pos = markdown.find(name)
             if name_pos >= 0:
-                # 查看名称附近200字符的内容
-                context = markdown[name_pos:name_pos + 300]
+                # 查看名称附近500字符的内容
+                context = markdown[name_pos:name_pos + 500]
 
-                # 提取评分
+                # 提取评分（格式：4.7/5 或 4.7 out of 5）
                 rating_match = re.search(r'(\d\.\d)\s*(?:/5|out of 5|stars?)', context, re.IGNORECASE)
                 if rating_match:
                     tool["rating"] = float(rating_match.group(1))
 
-                # 提取评论数
-                reviews_match = re.search(r'([\d,]+)\s*reviews?', context, re.IGNORECASE)
+                # 提取评论数（格式：1,234 reviews 或 (14,072)）
+                reviews_match = re.search(r'\(([\d,]+)\)', context)
                 if reviews_match:
                     reviews_str = reviews_match.group(1).replace(",", "")
                     try:
-                        tool["reviews_count"] = int(reviews_str)
+                        reviews_count = int(reviews_str)
+                        if 10 < reviews_count < 1000000:  # 合理范围
+                            tool["reviews_count"] = reviews_count
                     except ValueError:
                         pass
 
-        # 方法3：如果方法1没找到，尝试从HTML中提取
-        if not tools:
-            logger.info("从Markdown未找到工具，尝试从HTML提取")
-            # 这里可以添加HTML解析逻辑
+                # 如果没找到，尝试另一种格式
+                if not tool["reviews_count"]:
+                    reviews_match2 = re.search(r'([\d,]+)\s*reviews?', context, re.IGNORECASE)
+                    if reviews_match2:
+                        reviews_str = reviews_match2.group(1).replace(",", "")
+                        try:
+                            tool["reviews_count"] = int(reviews_str)
+                        except ValueError:
+                            pass
 
         return tools
 
