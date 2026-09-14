@@ -4,6 +4,10 @@ on:
     - cron: '0 6 * * 1'  # 每周一早上6点
   workflow_dispatch:
 
+permissions:
+  issues: write
+  contents: write
+
 jobs:
   keyword-ranking:
     runs-on: ubuntu-latest
