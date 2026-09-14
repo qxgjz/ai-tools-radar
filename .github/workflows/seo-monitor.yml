@@ -21,6 +21,7 @@ jobs:
       - name: Generate SEO Report
         run: |
           DATE=$(date +%Y-%m-%d)
+          mkdir -p ops/reports
           
           cat > "ops/reports/seo-report-${DATE}.md" << EOF
           # SEO 监控报告 - ${DATE}
